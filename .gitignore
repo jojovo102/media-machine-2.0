@@ -2,6 +2,9 @@
 library/**
 !library/index.json
 !library/README.md
+!library/os-screens/
+library/os-screens/*
+!library/os-screens/index.json
 jobs/
 vendor/
 .env

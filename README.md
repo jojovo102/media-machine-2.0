@@ -54,7 +54,9 @@ Josef has seen the first trial stay off his profile grid), one trial only.
    false start or a cut inside the voice fails the run. Nothing half-right goes further.
 7. **Graphics** (`presets/<name>/run.ts`): the brand's preset dresses the job with the editor's tools: the face
    measured, the layout rotation, real screens filling the top half, captions, sound effects, the quality gates
-   (flash scan, graphics QA, caption gate). A brand without a preset skips this: the base cut goes on.
+   (flash scan, graphics QA, caption gate). On the business page the plan is the machine's own (`plan.ts`: which line
+   goes on which screen, which on his face, the ask), judged by the editor's plan gates like a hand plan; a plan
+   written by hand for a reel is kept. A brand without a preset skips this: the base cut goes on.
 8. **Finish** (`finish.ts`): the brand's music from the library under the finished picture, levelled to -14.5 LUFS,
    as `outputs/<slug>.final.mp4`.
 9. **CapCut** (`capcut.ts`): a CapCut project from his own template, for hand edits (never touches a project the
@@ -75,7 +77,7 @@ Each step runs alone too: `bun engine/<step>.ts <brand> <session>`.
 | Language, scripts | English; scripts written by the Monday task in the Ophanim AI workspace | Italian; scripts checked by the priest, wording never changed |
 | Cut | the same engine; speed 1.0 | the same engine; speed 1.05 |
 | Voice, colour | as recorded, one gain; no grade | the same |
-| Look after the cut | preset `talking-head` (Jason's explainer with the Ophanim brand kit): real OS screens fill the top half, captions in a box on the seam, no word cards | none yet (stage 2): captions in its own type (EB Garamond cream, the word said in red), paintings and real pictures as the proof; his to evolve |
+| Look after the cut | preset `talking-head`, planned by the machine (`presets/talking-head/plan.ts`): real OS screens (`library/os-screens`) fill the top half, each matched to what he says; his face alone on about a fifth (the lines no screen fits); the ask as a DM thread; captions "the mix" (a clean subtitle with the spoken word in gold, a big gold word on face lines, one big word at a time on short punches) | preset `vv-captions`: captions in its own type (EB Garamond cream, the word said in red), his own pictures (`broll.json`) under his face; his to evolve |
 | Sound | sound effects on visible events only, from the library | to be decided on its first reel |
 | Music | the shared pool, -41 LUFS | the shared pool, -39 LUFS |
 | Publishing | Ophanim AI workspace: Instagram, YouTube, LinkedIn | VolpinVeritas workspace: Instagram, TikTok, YouTube |
@@ -85,7 +87,7 @@ Each step runs alone too: `bun engine/<step>.ts <brand> <session>`.
 `library/sfx` (the Master SFX Pack), `library/packs/<category>` (Jason's editing packs: motion backgrounds, shapes,
 overlays, transitions, LUTs, emojis, memes, green screen, PNGs), `library/music` (the shared pool). `bun
 engine/library.ts` indexes it (`library/index.json`: kind, duration, loudness, tags, rights). A track whose rights are
-unknown is never picked by the machine. Details and provenance: `library/README.md`.
+unknown is never picked by the machine. Details and provenance: `library/README.md`. `library/os-screens`: the real OS screens the business reels show (the Atlas Consulting demo workspace at phone width), with `index.json` (the words that call each screen, where to frame it, what to keep out of view).
 
 ## Taste
 

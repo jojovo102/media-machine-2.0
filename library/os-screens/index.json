@@ -1,0 +1,275 @@
+{
+ "about": "Real OS screens for the business reels (2026-10-22): the Atlas Consulting demo workspace, never the real one, phone width (375 px layout), 1500x3248, page colour #000000. Captured in the browser pane at 4x in four tiles, stitched. Shown in the split panel at z 0.72 (1500 wide = 1080), which sees 1333 px of the page around `focus` (y of the view's centre, 667-2581); each use takes the next focus. `keywords`: words or phrases in a sentence that call this screen (lowercase, matched on whole words; a trailing * matches any ending). `hook`: may open a reel when the hook names no screen. Reports is left out (it shows revenue); a screen with \"use\": false stays out (its note says why); `max` caps a screen's focus; comment-to-dm keeps its revenue card out of view (focus at most 1300). In tasks.png the demo task 'Log yesterday's DMs' is hidden (the brief: no manual logging); in research.png the 'needs Apify' line is hidden.",
+ "fill": "#000000",
+ "zoom": 0.72,
+ "drift": 60,
+ "screens": [
+  {
+   "id": "command-room",
+   "title": "Command Room",
+   "hook": true,
+   "focus": [
+    800,
+    1225
+   ],
+   "keywords": [
+    "system*",
+    "software",
+    "autopilot",
+    "ecosystem*",
+    "ai",
+    "os",
+    "operating system",
+    "everything",
+    "business",
+    "automat*",
+    "one place",
+    "dashboard",
+    "control"
+   ],
+   "max": 1225,
+   "note": "'days' DMs not logged' (manual logging, against the brief) starts at y1960: the view's bottom (focus + 667 + drift) stays above it"
+  },
+  {
+   "id": "command-room-calls",
+   "title": "Command Room",
+   "focus": [
+    1000,
+    1250
+   ],
+   "keywords": [
+    "today",
+    "day",
+    "morning",
+    "schedule",
+    "agenda"
+   ],
+   "note": "recaptured 2026-10-22 with the demo task 'Log yesterday's DMs' hidden; the top 220 px is a cut header strip, so the view starts below it"
+  },
+  {
+   "id": "calls",
+   "title": "Calls",
+   "focus": [
+    1500,
+    1900
+   ],
+   "keywords": [
+    "call*",
+    "booking",
+    "booked",
+    "book",
+    "closing",
+    "close",
+    "closed",
+    "closer*",
+    "sales",
+    "meeting*",
+    "appointment*",
+    "prospect*"
+   ]
+  },
+  {
+   "id": "pipeline",
+   "title": "Pipeline",
+   "focus": [
+    1200,
+    1300
+   ],
+   "keywords": [
+    "pipeline",
+    "deal*",
+    "lead*",
+    "dm*",
+    "outreach",
+    "linkedin",
+    "client*",
+    "customer*",
+    "conversation*",
+    "follow up",
+    "follow-up",
+    "money",
+    "revenue",
+    "sell*"
+   ]
+  },
+  {
+   "id": "performance",
+   "title": "Performance",
+   "focus": [
+    760,
+    1100
+   ],
+   "keywords": [
+    "result*",
+    "views",
+    "numbers",
+    "performance",
+    "data",
+    "metric*",
+    "track*",
+    "measure*",
+    "working",
+    "works"
+   ],
+   "use": false,
+   "note": "its stat cards wrap letter by letter at phone width (an OS layout bug): not shown until the OS is fixed and the screen recaptured"
+  },
+  {
+   "id": "performance-chart",
+   "title": "Performance",
+   "focus": [
+    700,
+    1500
+   ],
+   "keywords": [
+    "data",
+    "grow*",
+    "growth",
+    "increase*",
+    "measure*",
+    "metric*",
+    "month*",
+    "more",
+    "numbers",
+    "performance",
+    "result*",
+    "scale",
+    "scaling",
+    "track*",
+    "views",
+    "week*",
+    "working",
+    "works"
+   ]
+  },
+  {
+   "id": "content-board",
+   "title": "Content",
+   "focus": [
+    1100,
+    1400
+   ],
+   "keywords": [
+    "content",
+    "post*",
+    "reel*",
+    "video*",
+    "scheduled",
+    "schedule",
+    "instagram",
+    "youtube",
+    "publish*",
+    "audience",
+    "followers"
+   ],
+   "use": false,
+   "note": "its first column is demo 'Untitled post' idea cards: replaced by content-calendar"
+  },
+  {
+   "id": "content-calendar",
+   "title": "Content",
+   "focus": [
+    1100,
+    1500
+   ],
+   "keywords": [
+    "content",
+    "post*",
+    "reel*",
+    "video*",
+    "scheduled",
+    "schedule",
+    "instagram",
+    "youtube",
+    "publish*",
+    "audience",
+    "followers"
+   ]
+  },
+  {
+   "id": "tasks",
+   "title": "Daily Tasks",
+   "focus": [
+    1100,
+    1300
+   ],
+   "keywords": [
+    "task*",
+    "work",
+    "hours",
+    "routine",
+    "to do",
+    "to-do",
+    "slave",
+    "grind*",
+    "busy",
+    "time",
+    "focus",
+    "productiv*",
+    "effort*"
+   ]
+  },
+  {
+   "id": "battle-plan",
+   "title": "Battle Plan",
+   "focus": [
+    900,
+    1200
+   ],
+   "keywords": [
+    "plan",
+    "step*",
+    "setup",
+    "set up",
+    "set in place",
+    "phase*",
+    "roadmap",
+    "strategy",
+    "start",
+    "onboard*",
+    "install*"
+   ]
+  },
+  {
+   "id": "research",
+   "title": "Research",
+   "focus": [
+    1000,
+    1700
+   ],
+   "keywords": [
+    "research",
+    "competitor*",
+    "idea*",
+    "trend*",
+    "study",
+    "learn*",
+    "outlier*",
+    "what works",
+    "inspiration",
+    "niche"
+   ]
+  },
+  {
+   "id": "comment-to-dm",
+   "title": "Comment to DM",
+   "focus": [
+    1000,
+    1300
+   ],
+   "keywords": [
+    "comment*",
+    "keyword",
+    "link",
+    "inbox",
+    "message*",
+    "reply",
+    "replies",
+    "automatic*",
+    "instantly",
+    "seconds"
+   ],
+   "max": 1300
+  }
+ ]
+}

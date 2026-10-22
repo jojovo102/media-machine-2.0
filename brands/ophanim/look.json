@@ -16,5 +16,22 @@
   "grid": "rgba(201,168,76,0.11)",
   "light": "radial-gradient(circle at 50% 50%, rgba(201,168,76,0.07), rgba(201,168,76,0.024) 38%, rgba(201,168,76,0) 68%)",
   "captions": "mix",
-  "_captions": "Josef 2026-10-22, from four looks on a still: \"a mix of all 4\" (presets/talking-head/captions-mix.ts); the editor boxed captions rejected"
+  "_captions": "Josef 2026-10-22, from four looks on a still: \"a mix of all 4\" (presets/talking-head/captions-mix.ts); the editor boxed captions rejected",
+  "captionY": {
+    "wide": 1080,
+    "tight": 1240
+  },
+  "_captionY": "the caption line heights when face-frame.py finds no collar (a bare chest): wide y1080 and tight y1240, set by eye on the first business take (2026-10-22; y820 sat on the sunglasses)",
+  "join": [
+    "Ophanim AI",
+    "F2A"
+  ],
+  "cta": {
+    "reply_text": "Here's your AI ecosystem",
+    "attachment": [
+      "Ophanim OS",
+      "Link"
+    ]
+  },
+  "_cta": "the DM thread's reply and its attachment in the ask (the editor's comment_ask): the editor's words, not his; flagged in the plan"
 }

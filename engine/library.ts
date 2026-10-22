@@ -85,7 +85,7 @@ function rightsOf(kind: Kind, file: string): Item['rights'] {
   // instrumentals and slowed versions; never in the automatic rotation, chosen per reel by Josef
   if (file.startsWith('music/jason/')) return 'commercial';
   const n = file.toLowerCase();
-  return YT_ID.test(file) || ARTISTS.some((a) => n.includes(a)) ? 'unknown' : 'own';
+  return YT_ID.test(path.basename(file)) || ARTISTS.some((a) => path.basename(n).includes(a)) ? 'unknown' : 'own';
 }
 const round2 = (n: number) => Math.round(n * 100) / 100;
 const hasAlpha = (pix = '', profile = '') => /^(yuva|rgba|argb|bgra|abgr|gbrap|ya\d)/.test(pix) || profile.includes('4444');
@@ -153,7 +153,7 @@ const built = await pool(files, JOBS, async (rel): Promise<Item | null> => {
   const file = path.basename(rel), name = cleanName(file);
   const item: Item = {
     id: '', path: rel, kind, name, ext: path.extname(file).slice(1).toLowerCase(), bytes: st.size, mtime,
-    tags: tagsOf(name, kind), source: sourceOf(kind, file) as Item['source'], rights: rightsOf(kind, file),
+    tags: tagsOf(name, kind), source: sourceOf(kind, rel) as Item['source'], rights: rightsOf(kind, rel),
   };
   const prev = byPath.get(rel);
   if (prev && prev.bytes === st.size && prev.mtime === mtime && !prev.error) {

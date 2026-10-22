@@ -25,9 +25,9 @@ for (const r of reels) {
   const m = musicFor(x, r.n);
   const mix = path.join(dir, 'mix.wav');
   if (m) {
-    console.log(`reel ${r.n}: music ${path.basename(m.file)} (${m.gainDb > 0 ? '+' : ''}${m.gainDb} dB) under ${path.basename(picture)}`);
+    console.log(`reel ${r.n}: music ${path.basename(m.file)}${m.start ? ` from ${Math.floor(m.start / 60)}:${String(m.start % 60).padStart(2, '0')}` : ''} (${m.gainDb > 0 ? '+' : ''}${m.gainDb} dB) under ${path.basename(picture)}`);
     const music = path.join(dir, 'music.wav');
-    ffmpeg(['-stream_loop', '-1', '-i', m.file, '-af', `aformat=sample_rates=48000:channel_layouts=stereo,atrim=0:${dur},afade=t=in:d=0.8,afade=t=out:st=${Math.max(0, dur - 1.5)}:d=1.5,volume=${m.gainDb}dB`, '-t', String(dur), music]);
+    ffmpeg([...(m.start ? ['-ss', String(m.start)] : ['-stream_loop', '-1']), '-i', m.file, '-af', `aformat=sample_rates=48000:channel_layouts=stereo,atrim=0:${dur},afade=t=in:d=0.8,afade=t=out:st=${Math.max(0, dur - 1.5)}:d=1.5,volume=${m.gainDb}dB`, '-t', String(dur), music]);
     ffmpeg(['-i', picture, '-i', music, '-filter_complex', `[0:a]aformat=sample_rates=48000:channel_layouts=stereo[v];[v][1:a]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95:level=0[a]`, '-map', '[a]', '-ar', '48000', path.join(dir, 'mix-raw.wav')]);
   } else {
     console.log(`reel ${r.n}: no music (the pool is empty)`);

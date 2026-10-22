@@ -11,7 +11,14 @@
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
-import { LIBRARY, brandDir, ensure, has, loudness, readJson, writeJson, type Batch } from './lib';
+import { LIBRARY, brandDir, ensure, ffmpeg, has, loudness, readJson, writeJson, type Batch } from './lib';
+import { tmpdir } from 'node:os';
+
+function loudnessFrom(file: string, start: number) {
+  const cut = path.join(tmpdir(), `music-from-${process.pid}.wav`);
+  ffmpeg(['-ss', String(start), '-t', '60', '-i', file, '-ac', '2', '-ar', '48000', cut]);
+  return loudness(cut).lufs;
+}
 
 const AUDIO = /\.(mp3|wav|m4a|aac|flac|aif|aiff|ogg)$/i;
 type Pool = Record<string, { used?: string; lufs?: number }>;
@@ -49,14 +56,18 @@ export function poolTracks(x: Batch): string[] {
 }
 
 /** The track for reel `n` and the gain that sets it at the brand's loudness, or null when the pool is empty. */
-export function musicFor(x: Batch, n: number): { file: string; gainDb: number } | null {
+export function musicFor(x: Batch, n: number): { file: string; gainDb: number; start: number } | null {
   const tracks = poolTracks(x);
   if (!tracks.length) return null;
   const target = x.brand.music.lufs ?? -39;
   const poolFile = path.join(brandDir(x.brand.key), '.music-pool.json');
   const pool: Pool = existsSync(poolFile) ? JSON.parse(readFileSync(poolFile, 'utf8')) : {};
   const choiceFile = path.join(x.work, `reel-${n}`, 'music.json');
-  let file = has(choiceFile) ? readJson<{ file: string }>(choiceFile).file : '';
+  // a reel's own pick (work/reel-<n>/music.json): `file`, and `start` in seconds where the track comes in (Josef 2026-10-22:
+  // Csardas from 2:08, where the violins start)
+  const choice = has(choiceFile) ? readJson<{ file: string; start?: number }>(choiceFile) : null;
+  const start = choice?.start ?? 0;
+  let file = choice?.file ?? '';
   if (file && !path.isAbsolute(file)) file = musicDirs(x).map((d) => path.join(d, file)).find((f) => existsSync(f)) ?? '';
   if (!file || !existsSync(file)) {
     // least recently used by this brand, never used first; ties in name order
@@ -67,5 +78,7 @@ export function musicFor(x: Batch, n: number): { file: string; gainDb: number } 
   }
   if (pool[file]?.lufs === undefined) pool[file] = { ...pool[file], lufs: loudness(file).lufs };
   writeFileSync(poolFile, JSON.stringify(pool, null, 1));
-  return { file, gainDb: +(target - pool[file]!.lufs!).toFixed(2) };
+  // from a start point the level is the used part's, not the whole track's (a quiet opening would set it too loud)
+  const lufs = start > 0 ? loudnessFrom(file, start) : pool[file]!.lufs!;
+  return { file, gainDb: +(target - lufs).toFixed(2), start };
 }

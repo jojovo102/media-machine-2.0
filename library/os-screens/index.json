@@ -111,8 +111,7 @@
     "working",
     "works"
    ],
-   "use": false,
-   "note": "its stat cards wrap letter by letter at phone width (an OS layout bug): not shown until the OS is fixed and the screen recaptured"
+   "note": "recaptured 2026-10-22 after the OS fix (e066bea): the stat cards now sit two to a row at phone width"
   },
   {
    "id": "performance-chart",

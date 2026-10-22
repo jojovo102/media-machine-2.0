@@ -15,6 +15,7 @@ import path from 'node:path';
 import { existsSync, linkSync, copyFileSync, readFileSync, writeFileSync } from 'node:fs';
 import { batch, cleanVoice, ensure, ffmpeg, has, job, log, loudness, naturalLevel, probe, readJson, setState, writeJson } from './lib';
 import { mergeHearings, scriptSpelling } from './captext';
+import { levels10ms } from './core/speech';
 
 const x = batch(process.argv[2] ?? '', process.argv[3] ?? '');
 const only = process.argv.slice(4).filter((a) => /^\d+$/.test(a)).map(Number);
@@ -56,8 +57,44 @@ function cutWords(r: Reel, scriptText: string) {
   return { words: out, changes: sp.changes };
 }
 
+// <session>/remove.txt: words he wants out of the reel, one phrase a line ("senza sapere", Josef 2026-10-22: he says it
+// and right after "senza la garanzia"). The phrase is found among the reel's words and cut out of its piece at the
+// quietest 10 ms around its edges (a piece's end or start moves; a phrase inside a piece splits it in two).
+const removals = has(x.p('remove.txt')) ? readFileSync(x.p('remove.txt'), 'utf8').split('\n').map((l) => l.trim()).filter(Boolean) : [];
+const norm = (t: string) => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9']/g, '');
+const levels = new Map<string, Float32Array>();
+const quietest = (take: string, from: number, to: number) => {
+  if (!levels.has(take)) levels.set(take, levels10ms(path.join(x.work, 'takes', `${take}.16k.wav`)));
+  const db = levels.get(take)!; let best = Math.round(from * 100);
+  for (let i = Math.round(from * 100); i <= Math.round(to * 100); i++) if (db[i]! < db[best]!) best = i;
+  return best / 100;
+};
+function removePhrases(r: Reel) {
+  for (const phrase of removals) {
+    const want = phrase.split(/\s+/).map(norm).filter(Boolean);
+    const ws = r.words;
+    for (let i = 0; i + want.length <= ws.length; i++) {
+      if (!want.every((q, k) => norm(ws[i + k]!.w) === q)) continue;
+      const first = ws[i]!, last = ws[i + want.length - 1]!;
+      const k = r.pieces.findIndex((p) => p.take === first.take && first.start >= p.a - 0.05 && first.start < p.b);
+      if (k < 0) continue;
+      const p = r.pieces[k]!;
+      const cutIn = quietest(p.take, first.start - 0.12, first.start + 0.06), cutOut = quietest(p.take, last.end - 0.06, last.end + 0.12);
+      const before = cutIn - p.a, after = p.b - cutOut;
+      if (before < 0.3 && after < 0.3) r.pieces.splice(k, 1);
+      else if (before < 0.3) p.a = cutOut;
+      else if (after < 0.3) p.b = cutIn;
+      else r.pieces.splice(k, 1, { ...p, b: cutIn }, { ...p, a: cutOut });
+      r.words = ws.filter((_, j) => j < i || j >= i + want.length);
+      console.log(`reel ${r.n}: "${phrase}" removed (${cutIn.toFixed(2)}-${cutOut.toFixed(2)} s of take ${p.take})`);
+      break;
+    }
+  }
+}
+
 for (const r of reels) {
   if (!r.pieces.length) { console.warn(`reel ${r.n}: nothing to cut (no sentence found)`); continue; }
+  removePhrases(r);
   // every piece a whole number of frames, so the cuts of the base land where the sum of the pieces says they do: the
   // editor's layout and flash scan count frames from transcript/cuts.json, and a piece of 4.83 s gave 145 frames
   // (the flash scan found a one-frame sliver at every switch, 2026-10-22)

@@ -35,6 +35,9 @@ def toks(text):
 scripts = json.load(open(os.path.join(work, 'scripts.json')))['scripts']
 reels = json.load(open(os.path.join(work, 'reels.json')))
 reel = next(r for r in reels if str(r['n']) == str(n))
+_cut = os.path.join(work, f'reel-{n}', 'pieces.json')
+if os.path.exists(_cut):
+    reel = {**reel, 'pieces': json.load(open(_cut))}  # the pieces as cut (removals, frame snapping)
 script = next((s for s in scripts if s['title'] == reel['title']), scripts[0])
 script_text = ' '.join(s['text'] for s in script['sentences'])
 st = toks(script_text)

@@ -69,6 +69,14 @@ const quietest = (take: string, from: number, to: number) => {
   for (let i = Math.round(from * 100); i <= Math.round(to * 100); i++) if (db[i]! < db[best]!) best = i;
   return best / 100;
 };
+const earliestDip = (take: string, from: number, to: number) => {
+  quietest(take, from, from);
+  const db = levels.get(take)!, a = Math.round(from * 100), b = Math.round(to * 100);
+  let deepest = Infinity;
+  for (let i = a; i <= b; i++) deepest = Math.min(deepest, db[i]!);
+  for (let i = a + 1; i < b; i++) if (db[i]! <= deepest + 6 && db[i]! <= db[i - 1]! && db[i]! <= db[i + 1]!) return i / 100;
+  return quietest(take, from, to);
+};
 function removePhrases(r: Reel) {
   for (const phrase of removals) {
     const want = phrase.split(/\s+/).map(norm).filter(Boolean);
@@ -79,7 +87,11 @@ function removePhrases(r: Reel) {
       const k = r.pieces.findIndex((p) => p.take === first.take && first.start >= p.a - 0.05 && first.start < p.b);
       if (k < 0) continue;
       const p = r.pieces[k]!;
-      const cutIn = quietest(p.take, first.start - 0.12, first.start + 0.06), cutOut = quietest(p.take, last.end - 0.06, last.end + 0.12);
+      // the cut in: the EARLIEST dip after the word before it starts that is within 6 dB of the deepest one (the
+      // transcriber put "senza" at 50.43 s when its "se" began at 50.31: the deepest dip, inside the word, left "se" in)
+      const prev = ws[i - 1];
+      const cutIn = earliestDip(p.take, Math.max(p.a, prev && prev.take === first.take ? prev.start + 0.08 : first.start - 0.3), first.start + 0.06);
+      const cutOut = quietest(p.take, last.end - 0.06, last.end + 0.12);
       const before = cutIn - p.a, after = p.b - cutOut;
       if (before < 0.3 && after < 0.3) r.pieces.splice(k, 1);
       else if (before < 0.3) p.a = cutOut;
@@ -99,6 +111,8 @@ for (const r of reels) {
   // editor's layout and flash scan count frames from transcript/cuts.json, and a piece of 4.83 s gave 145 frames
   // (the flash scan found a one-frame sliver at every switch, 2026-10-22)
   for (const p of r.pieces) p.b = +(p.a + Math.round((p.b - p.a) * FPS) / FPS).toFixed(4);
+  // the pieces as cut (after removals and frame snapping): check.py measures the cuts of the reel from these
+  writeJson(path.join(x.work, `reel-${r.n}`, 'pieces.json'), r.pieces);
   const j = job(x, r.title);
   const dir = path.join(x.work, `reel-${r.n}`);
   ensure(dir, j.raw, j.transcript, j.outputs);

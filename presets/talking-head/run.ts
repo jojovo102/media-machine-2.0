@@ -35,7 +35,7 @@ const AGAIN = flag('again');
 const PRESET = path.join(EDITOR, 'presets', 'instagram', 'talking-head-explainer');
 const KIT = path.join(PRESET, 'kit', 'engine.py');
 if (!existsSync(KIT)) throw new Error(`Jason's editor is not at ${EDITOR} (set VIDEO_EDITOR to its folder)`);
-type Look = { accent: string; accentSoft?: string; grid?: string; light?: string; fonts?: Record<string, string>; logo?: string };
+type Look = { accent: string; accentSoft?: string; grid?: string; light?: string; fonts?: Record<string, string>; logo?: string; captions?: 'mix' };
 const lookFile = path.join(brandDir(x.brand.key), 'look.json');
 const look: Look | null = has(lookFile) ? (JSON.parse(readFileSync(lookFile, 'utf8').replace(/\{base\}/g, BASE)) as Look) : null;
 
@@ -131,6 +131,12 @@ for (const r of reels) {
         break;
       }
       case 'captions': {
+        // the brand's own captions (look.json "captions": "mix", Josef 2026-10-22) instead of the editor's boxed ones
+        if (look?.captions === 'mix') {
+          const r = Bun.spawnSync(['bun', path.join(import.meta.dir, 'captions-mix.ts'), J], { stdout: 'inherit', stderr: 'inherit' });
+          if (r.exitCode !== 0) throw new Error('captions-mix.ts failed');
+          break;
+        }
         uv([rel(path.join(PRESET, 'captions.py')), J]);
         uv([rel(path.join(PRESET, 'captions.py')), J, '--straight-alpha', '--ver', 'sa']);
         break;

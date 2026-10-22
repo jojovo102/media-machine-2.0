@@ -24,7 +24,7 @@ import { tmpdir } from 'node:os';
 
 const J = path.resolve(process.argv[2] ?? '');
 const name = path.basename(J);
-type Look = { captionY?: { wide: number; tight: number }; join?: string[]; cta?: { reply_text: string; attachment?: [string, string] } };
+type Look = { captionY?: { wide: number; tight: number }; join?: string[]; cta?: { reply_text: string; attachment?: [string, string] }; screens?: 'match' | 'none' };
 const look: Look = process.argv[3] && existsSync(process.argv[3]) ? JSON.parse(readFileSync(process.argv[3], 'utf8')) : {};
 const FPS = 30;
 const fr = (t: number) => Math.round(t * FPS);
@@ -134,7 +134,12 @@ while (beats.length > 2 && beats[0]!.b - beats[0]!.a < 2 * FPS) { beats[0]!.b = 
 // ---- modes
 const ask = askStart >= 0 ? beats.findIndex((x) => x.ws.includes(words[askStart]!)) : -1;
 if (ask >= 0) { const x = beats[ask]!; x.b = END; x.ws = wordsIn(x.a, END); beats = beats.slice(0, ask + 1); x.mode = 'S'; x.role = 'cta'; }
-beats[0]!.mode = 'S'; beats[0]!.role = 'hook';
+// Josef 2026-10-22 on the screens matched by keyword: "all the other from the OS had nothing to do". look.json
+// "screens": "none" keeps his face full frame from frame 0 to the ask, a jump cut alternating wide and punched in at
+// every beat (his own May edit of this take); the ask keeps its DM thread ("that was cool")
+const FACE_ONLY = look.screens === 'none';
+if (FACE_ONLY) beats.forEach((x, i) => { if (x.role !== 'cta') x.mode = i % 2 === 0 ? 'W' : 'T'; });
+else { beats[0]!.mode = 'S'; beats[0]!.role = 'hook'; }
 const last = ask >= 0 ? ask - 1 : beats.length; // the beat before the ask stays split (L-CTA)
 const faceMode = (x: Beat) => (x.b - x.a < 1.5 * FPS ? 'W' : 'T') as 'T' | 'W';
 const canFace = (i: number) => i >= 1 && i < last && beats[i]!.b - beats[i]!.a <= 4.5 * FPS && !beats[i]!.mode;
@@ -142,11 +147,11 @@ const besideOk = (i: number) => [beats[i - 1], beats[i + 1]].every((n) => !n || 
 const target = 0.2 * END;
 let face = 0;
 const choose = (i: number) => { beats[i]!.mode = faceMode(beats[i]!); face += beats[i]!.b - beats[i]!.a; };
-if (canFace(1)) choose(1);
+if (!FACE_ONLY && canFace(1)) choose(1);
 const personal = (x: Beat) => x.ws.some((w) => /\?$/.test(w.text.trim())) || x.ws.some((w) => ['i', "i'm", 'my', 'me', 'you', "you're", 'your'].includes(norm(w.text)));
 const order = beats.map((x, i) => ({ i, best: Math.max(0, ...idx.screens.map((s) => hits(x.ws, s))), personal: personal(x), d: x.b - x.a }))
   .filter(({ i }) => canFace(i)).sort((p, q) => p.best - q.best || Number(q.personal) - Number(p.personal) || p.d - q.d);
-for (const { i, d } of order) {
+for (const { i, d } of FACE_ONLY ? [] : order) {
   if (face + d > target + 1.5 * FPS || !canFace(i) || !besideOk(i)) continue;
   choose(i);
 }
@@ -176,7 +181,7 @@ const cells: Cell[] = [];
 for (let i = 0; i < beats.length; i++) {
   const x = beats[i]!;
   if (x.mode !== 'S') {
-    rows.push({ a: x.a, b: x.b, mode: x.mode!, why: `"${line(x.ws)}": on his face (${x.mode === 'T' ? 'close' : 'a breath, wide'})` });
+    rows.push({ a: x.a, b: x.b, mode: x.mode!, why: `"${line(x.ws)}": on his face, full frame (${x.mode === 'T' ? 'punched in' : FACE_ONLY ? 'wide' : 'a breath, wide'})` });
     continue;
   }
   const run = [x];
@@ -307,7 +312,7 @@ const plan = {
       };
     }),
   ],
-  layout_deviations: [],
+  layout_deviations: FACE_ONLY ? [{ rule: 'L-OPEN', why: 'Josef 2026-10-22: his face full frame from frame 0; no screen unless the line is about it (brands/ophanim/TASTE.md)' }] : [],
   variants: {},
 };
 if (cta && !askWords) throw new Error(`the ask "${line(cta.beats[0]!.ws)}" has no keyword after "comment" or too few words to time the thread on`);
@@ -321,7 +326,7 @@ const storyboard = {
   // each screen cell's original under its own id (the plan's `asset`, what validate-plan.py checks)
   originals: Object.fromEntries(cells.filter((c) => c.role !== 'cta').map((c) => [c.id, c.shots[0]!.screen.id])),
   cells: Object.fromEntries(cells.map((c) => [c.id, c.role === 'cta'
-    ? { recipe: 'comment_ask', ...askWords!, reply_text: look.cta?.reply_text ?? 'Here it is', attachment: look.cta?.attachment ?? null }
+    ? { recipe: FACE_ONLY ? 'comment_ask_cut' : 'comment_ask', ...askWords!, reply_text: look.cta?.reply_text ?? 'Here it is', attachment: look.cta?.attachment ?? null }
     : { recipe: 'page', shots: c.shots.map((s) => ({ file: `${s.screen.id}.png`, from: [750, s.focus], to: [750, s.focus + idx.drift], zoom: idx.zoom })) }])),
 };
 writeFileSync(path.join(J, 'storyboard.json'), JSON.stringify(storyboard, null, 1));

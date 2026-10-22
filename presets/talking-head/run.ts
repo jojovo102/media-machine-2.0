@@ -57,9 +57,20 @@ function storyboardPy(sb: Sb): string {
   const lines = Object.entries(sb.cells).map(([id, c]) => {
     if (c.recipe === 'page') return `    ${q(id)}: (page, dict(shots=[${c.shots!.map((s) => `(${q(s.file)}, None, (((${s.from[0]}, ${s.from[1]}), ${s.zoom}), ((${s.to[0]}, ${s.to[1]}), ${s.zoom})), CROP, FILL)`).join(',\n' + ' '.repeat(30))}])),`;
     const a = c.attachment as [string, string] | null;
-    return `    ${q(id)}: (comment_ask, dict(comment=${q(c.comment)}, keyword=${q(c.keyword)}, send=${q(c.send)}, reply=${q(c.reply)}, reply_text=${q(c.reply_text)}${a ? `, attachment=(${q(a[0])}, ${q(a[1])})` : ''})),`;
+    return `    ${q(id)}: (${c.recipe}, dict(comment=${q(c.comment)}, keyword=${q(c.keyword)}, send=${q(c.send)}, reply=${q(c.reply)}, reply_text=${q(c.reply_text)}${a ? `, attachment=(${q(a[0])}, ${q(a[1])})` : ''})),`;
   });
-  return `# written by media-machine presets/talking-head/plan.ts (storyboard.json): real OS screens, each shot a framing at\n# z ${sb.cells && Object.values(sb.cells).find((c) => c.shots)?.shots?.[0]?.zoom} drifting down the page; the ask as the editor's DM thread\nCROP = ${q(sb.crop)}\nFILL = ${q(sb.fill)}\nSTORYBOARD = {\n${lines.join('\n')}\n}`;
+  // the ask after his face (look.json screens: none): the editor's comment_ask without its push, which needs a graphic
+  // ending on the ask's first frame; the thread cuts in on the switch instead
+  const cut = Object.values(sb.cells).some((c) => c.recipe === 'comment_ask_cut') ? [
+    'def comment_ask_cut(gid, comment, keyword, send, reply, reply_text, attachment=None):',
+    '    # comment_ask cutting in from his face: no graphic before it to push from (media-machine, 2026-10-22)',
+    '    a, b = span(gid)',
+    '    mode_of(gid, "S")',
+    '    words = {"comment": said(gid, comment), "keyword": said(gid, keyword), "send": said(gid, send),',
+    '             "reply": said(gid, reply)}',
+    '    return C.thread_cta(ctx, words, keyword, reply_text, attachment, id=gid, start=a, end=b)',
+    '', '', ''].join('\n') : '';
+  return `${cut}# written by media-machine presets/talking-head/plan.ts (storyboard.json): real OS screens, each shot a framing at\n# z ${sb.cells && Object.values(sb.cells).find((c) => c.shots)?.shots?.[0]?.zoom} drifting down the page; the ask as the editor's DM thread\nCROP = ${q(sb.crop)}\nFILL = ${q(sb.fill)}\nSTORYBOARD = {\n${lines.join('\n')}\n}`;
 }
 
 for (const r of reels) {

@@ -21,7 +21,7 @@
 // from the editor's docs; this script stops and says so when they are missing.
 //   bun presets/talking-head/run.ts <brand> <session> [reel n] [--from <step>] [--to <step>] [--again]
 import path from 'node:path';
-import { copyFileSync, existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { BASE, EDITOR, arg, batch, brandDir, flag, has, job, log, readJson, slug } from '../../engine/lib';
 
 const x = batch(process.argv[2] ?? '', process.argv[3] ?? '');
@@ -64,6 +64,10 @@ for (const r of reels) {
       }
       case 'plan': {
         need(plan, 'graphics-plan.json (write it from the editor\'s layout.md § 12 and graphics-plan SKILL.md)');
+        // placement.json is derived (place writes it from the plan and the renders); a copy from an earlier plan fails
+        // the layout's L-ALIGN against rows that no longer exist
+        const placed = j.p('hf-graphics', 'placement.json');
+        if (has(placed)) { rmSync(placed); console.log('an earlier placement.json removed: place writes it again'); }
         // the collar (the W/T caption heights) and a crown per O row (the card's clearance over his head)
         uv(['workflows/face-frame.py', J, '--collar', '--plan', J], { ok: [0, 3] });
         const rows = readJson<{ layout: { start: number; end: number; mode: string }[] }>(plan).layout ?? [];

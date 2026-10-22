@@ -76,6 +76,9 @@ try {
   const [org] = await sql`select timezone from organizations where id = ${x.brand.os.org}`;
   const tz = String(org?.timezone || 'Europe/Rome');
   for (const r of reels) {
+    // a reel with no script post has the post publish.ts made for it (work/reel-<n>/post.json)
+    const remembered = path.join(x.work, `reel-${r.n}`, 'post.json');
+    if (!r.postId && has(remembered)) r.postId = readJson<{ id: string }>(remembered).id;
     if (!r.postId) continue;
     const [post] = await sql`select id, org_id, status, title, caption, scheduled_at, posted_at from content_posts where id = ${r.postId}`;
     if (!post || post.org_id !== x.brand.os.org) { console.warn(`reel ${r.n}: its post is not in the ${x.brand.os.workspace} workspace`); continue; }

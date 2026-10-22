@@ -37,3 +37,10 @@ The library itself is never committed (`library/**` in .gitignore): the files li
 ## Rights
 
 Files from the packs (`rights: pack`) are usable under the terms of Jason's pack. Music marked `rights: own` is Josef's. Anything with `rights: unknown` (a track with a YouTube id or an artist's name in its file name) must not be used on the business page until it is cleared; the script lists them at the end of every run.
+
+## Jason's music (music/jason)
+
+77 tracks from Jason's Background Music Library on Notion, downloaded on 2026-10-22 with Josef's OK; `tracks.json`
+holds each one's title and vibe (Chill, Hard, Phonk, Sigma, Inspirational...). Most are commercial songs as
+instrumentals or slowed versions, so the index marks them `rights: commercial`: the machine never picks one on its own
+(music.ts reads only the top of `music/`); Josef chooses one for a reel by name.

@@ -39,7 +39,7 @@ const MEASURED = ['id', 'duration', 'width', 'height', 'fps', 'alpha', 'audio', 
 
 interface Item {
   id: string; path: string; kind: Kind; name: string; ext: string; bytes: number; mtime: string; tags: string[];
-  source: 'Master SFX Pack' | 'ULTIMATE Editing Pack' | 'own'; rights: 'pack' | 'own' | 'unknown';
+  source: 'Master SFX Pack' | 'ULTIMATE Editing Pack' | 'own' | "Jason's Background Music Library"; rights: 'pack' | 'own' | 'unknown' | 'commercial';
   duration?: number; width?: number; height?: number; fps?: number; alpha?: boolean; audio?: boolean; channels?: number; sampleRate?: number;
   lufs?: number | null; peakDb?: number | null;
   /** The path of the first entry with the same bytes. */
@@ -78,9 +78,12 @@ function tagsOf(name: string, kind: Kind): string[] {
   const words = name.toLowerCase().split(/[^a-z]+/).filter((w) => w.length >= 3 && !STOP.has(w));
   return [...new Set([...words, kind])];
 }
-const sourceOf = (kind: Kind) => kind === 'sfx' ? 'Master SFX Pack' : kind === 'music' ? 'own' : 'ULTIMATE Editing Pack';
+const sourceOf = (kind: Kind, file = '') => kind === 'sfx' ? 'Master SFX Pack' : kind === 'music' ? (file.startsWith('music/jason/') ? "Jason's Background Music Library" : 'own') : 'ULTIMATE Editing Pack';
 function rightsOf(kind: Kind, file: string): Item['rights'] {
   if (kind !== 'music') return 'pack';
+  // Jason's Background Music Library (music/jason, 2026-10-22, downloaded with Josef's OK): mostly commercial songs as
+  // instrumentals and slowed versions; never in the automatic rotation, chosen per reel by Josef
+  if (file.startsWith('music/jason/')) return 'commercial';
   const n = file.toLowerCase();
   return YT_ID.test(file) || ARTISTS.some((a) => n.includes(a)) ? 'unknown' : 'own';
 }
@@ -150,7 +153,7 @@ const built = await pool(files, JOBS, async (rel): Promise<Item | null> => {
   const file = path.basename(rel), name = cleanName(file);
   const item: Item = {
     id: '', path: rel, kind, name, ext: path.extname(file).slice(1).toLowerCase(), bytes: st.size, mtime,
-    tags: tagsOf(name, kind), source: sourceOf(kind), rights: rightsOf(kind, file),
+    tags: tagsOf(name, kind), source: sourceOf(kind, file) as Item['source'], rights: rightsOf(kind, file),
   };
   const prev = byPath.get(rel);
   if (prev && prev.bytes === st.size && prev.mtime === mtime && !prev.error) {

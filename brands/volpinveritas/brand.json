@@ -26,7 +26,11 @@
   "voice": "natural",
   "music": {
     "lufs": -39,
-    "_why": "the shared pool in library/music, this brand's own rotation; -39 LUFS under a -15 LUFS voice is the balance of Contro l'AI nei video, which Josef approved"
+    "_why": "the shared pool in library/music, this brand's own rotation; -39 LUFS under a -15 LUFS voice is the balance of Contro l'AI nei video, which Josef approved",
+    "skip": [
+      "vsl-music"
+    ],
+    "_skip": "the business film track never goes under a VolpinVeritas reel"
   },
   "gap": 0.1,
   "capcut": {
@@ -42,5 +46,57 @@
     "verified": false,
     "_why": "3 trial versions of every approved reel, posted across the day by the OS (D108). verified: set true once the first trial is seen off the profile grid; until then one version only."
   },
-  "notes": "Josef's Catholic page, Italian. Scripts are checked by the priest: never change their wording. No preset yet: the base cut goes out as it is until its own look is built (stage 2): captions in its own type (EB Garamond cream, the word said in the logo's red #B01018, approved 2026-10-21), paintings and real pictures as the proof, never drawn card templates (2026-10-22). The look is his to evolve: it is not fixed forever."
+  "notes": "Josef's Catholic page, Italian. Scripts are checked by the priest: never change their wording. No preset yet: the base cut goes out as it is until its own look is built (stage 2): captions in its own type (EB Garamond cream, the word said in the logo's red #B01018, approved 2026-10-21), paintings and real pictures as the proof, never drawn card templates (2026-10-22). The look is his to evolve: it is not fixed forever.",
+  "captionLook": {
+    "family": "'EB Garamond', Georgia, serif",
+    "weight": 600,
+    "color": "#F1E9DC",
+    "on": "#B01018",
+    "_on": "the red of the logo on volpinveritas.com (the site primary #6C0001 sinks into a dark shirt); Josef, 2026-10-21: red instead of gold"
+  },
+  "captionFixes": [
+    [
+      "gli A",
+      "l'IA"
+    ],
+    [
+      "Gli A",
+      "L'IA"
+    ]
+  ],
+  "assets": "{base}/volpinveritas-website/contenuti/reels/_assets",
+  "theme": {
+    "card": "rgba(14,9,6,.95)",
+    "text": "#E5DDD0",
+    "muted": "#9A8D7B",
+    "accent": "#B99056",
+    "red": "#6C0001",
+    "serif": "'EB Garamond', Georgia, serif",
+    "display": "Cinzel, Georgia, serif",
+    "logo": "logo-volpinveritas.png",
+    "fonts": [
+      [
+        "EB Garamond",
+        "EBGaramond-latin.woff2",
+        "400 800",
+        "normal"
+      ],
+      [
+        "EB Garamond",
+        "EBGaramond-Italic-latin.woff2",
+        "400 800",
+        "italic"
+      ],
+      [
+        "Cinzel",
+        "Cinzel-latin.woff2",
+        "400 700",
+        "normal"
+      ]
+    ],
+    "_from": "volpinveritas-website app/globals.css (oklch converted) and its fonts, 2026-10-21"
+  },
+  "preset": "vv-captions",
+  "captionY": 0.52,
+  "captionSize": 80
 }

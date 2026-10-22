@@ -12,5 +12,7 @@
     "_what": "Real OS screens come from the Atlas Consulting demo workspace (organizations.demo), never from the real workspace: no client names, no numbers of his own on screen (brands/ophanim/TASTE.md).",
     "workspace": "Atlas Consulting",
     "url": "https://app.ophanimai.com"
-  }
+  },
+  "grid": "rgba(201,168,76,0.11)",
+  "light": "radial-gradient(circle at 50% 50%, rgba(201,168,76,0.07), rgba(201,168,76,0.024) 38%, rgba(201,168,76,0) 68%)"
 }

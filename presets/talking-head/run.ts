@@ -35,7 +35,7 @@ const AGAIN = flag('again');
 const PRESET = path.join(EDITOR, 'presets', 'instagram', 'talking-head-explainer');
 const KIT = path.join(PRESET, 'kit', 'engine.py');
 if (!existsSync(KIT)) throw new Error(`Jason's editor is not at ${EDITOR} (set VIDEO_EDITOR to its folder)`);
-type Look = { accent: string; accentSoft?: string; fonts?: Record<string, string>; logo?: string };
+type Look = { accent: string; accentSoft?: string; grid?: string; light?: string; fonts?: Record<string, string>; logo?: string };
 const lookFile = path.join(brandDir(x.brand.key), 'look.json');
 const look: Look | null = has(lookFile) ? (JSON.parse(readFileSync(lookFile, 'utf8').replace(/\{base\}/g, BASE)) as Look) : null;
 
@@ -86,6 +86,8 @@ for (const r of reels) {
             let s = readFileSync(p, 'utf8');
             s = s.replace(/("ROYAL"\s*:\s*")#[0-9a-fA-F]{6}(")/g, `$1${look.accent}$2`);
             if (look.accentSoft) s = s.replace(/("SKY"\s*:\s*")#[0-9a-fA-F]{6}(")/g, `$1${look.accentSoft}$2`);
+            if (look.grid) s = s.replace(/("BG_GRID"\s*:\s*")[^"]+(")/g, `$1${look.grid}$2`);
+            if (look.light) s = s.replace(/("BG_LIGHT"\s*:\s*")[^"]+(")/g, `$1${look.light}$2`);
             writeFileSync(p, s);
           }
           if (look.logo && existsSync(look.logo)) uv([rel(KIT), 'stage', J, 'brand', look.logo, '--mark', '--name', `${x.brand.key}.png`], { ok: [0, 1] });

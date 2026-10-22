@@ -58,6 +58,10 @@ function cutWords(r: Reel, scriptText: string) {
 
 for (const r of reels) {
   if (!r.pieces.length) { console.warn(`reel ${r.n}: nothing to cut (no sentence found)`); continue; }
+  // every piece a whole number of frames, so the cuts of the base land where the sum of the pieces says they do: the
+  // editor's layout and flash scan count frames from transcript/cuts.json, and a piece of 4.83 s gave 145 frames
+  // (the flash scan found a one-frame sliver at every switch, 2026-10-22)
+  for (const p of r.pieces) p.b = +(p.a + Math.round((p.b - p.a) * FPS) / FPS).toFixed(4);
   const j = job(x, r.title);
   const dir = path.join(x.work, `reel-${r.n}`);
   ensure(dir, j.raw, j.transcript, j.outputs);

@@ -31,7 +31,7 @@ for (const r of reels) {
   ensure(dir);
   const list = await captionTrack(words, dur, { w: 1080, h: 1920, y: b.captionY ?? 0.52, size: b.captionSize ?? 80, style: 'brand3', dir, fps: FPS, look: { ...b.captionLook, fontFace } });
   // b-roll pictures, anchored to his words
-  type Shot = { file: string; from: string; to?: string; hold?: number; tail?: number };
+  type Shot = { file: string; from: string; to?: string; hold?: number; tail?: number; style?: 'under' | 'float' };
   const shots = has(x.p('broll.json')) ? readJson<Shot[]>(x.p('broll.json')) : [];
   const norm = (t: string) => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9']/g, '');
   const find = (phrase: string, after = 0) => {
@@ -46,9 +46,14 @@ for (const r of reels) {
     if (!a) { console.warn(`b-roll ${sh.file}: "${sh.from}" is not said in this reel: left out`); continue; }
     const t0 = Math.round(a.at * FPS) / FPS, t1 = Math.round(((b ? b.end : a.at + (sh.hold ?? 2.4)) + (sh.tail ?? 0.4)) * FPS) / FPS;
     ins.push('-loop', '1', '-t', dur.toFixed(3), '-i', path.join(x.dir, sh.file));
-    fc += `[${k}:v]split[p${k}][q${k}];[p${k}]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,gblur=sigma=40,eq=brightness=-0.25[bg${k}];` +
-      `[q${k}]scale=1000:-2[fg${k}];[bg${k}][fg${k}]overlay=x=(W-w)/2:y=200,fps=${FPS},format=yuv420p[sh${k}];` +
-      `[${last}][sh${k}]overlay=0:0:enable='between(t,${(t0 - 0.5 / FPS).toFixed(4)},${(t1 - 0.5 / FPS).toFixed(4)})'[o${k}];`;
+    const en = `enable='between(t,${(t0 - 0.5 / FPS).toFixed(4)},${(t1 - 0.5 / FPS).toFixed(4)})'`;
+    if ((sh.style ?? 'under') === 'under')
+      // his own way (Josef 2026-10-22, "put it under my face as I do for other videos"): the picture over the lower
+      // half of the frame, his face and the captions above it untouched
+      fc += `[${k}:v]scale=920:600:force_original_aspect_ratio=decrease,fps=${FPS},format=yuva420p[sh${k}];[${last}][sh${k}]overlay=x=(W-w)/2:y=1080+(600-h)/2:${en}[o${k}];`;
+    else
+      fc += `[${k}:v]split[p${k}][q${k}];[p${k}]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,gblur=sigma=40,eq=brightness=-0.25[bg${k}];` +
+        `[q${k}]scale=1000:-2[fg${k}];[bg${k}][fg${k}]overlay=x=(W-w)/2:y=200,fps=${FPS},format=yuv420p[sh${k}];[${last}][sh${k}]overlay=0:0:${en}[o${k}];`;
     last = `o${k}`; k++;
     console.log(`reel ${r.n}: b-roll ${path.basename(sh.file)} ${t0.toFixed(2)}-${t1.toFixed(2)} s`);
   }

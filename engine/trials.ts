@@ -83,14 +83,17 @@ try {
     const [post] = await sql`select id, org_id, status, title, caption, scheduled_at, posted_at from content_posts where id = ${r.postId}`;
     if (!post || post.org_id !== x.brand.os.org) { console.warn(`reel ${r.n}: its post is not in the ${x.brand.os.workspace} workspace`); continue; }
     if (!DRY && post.status !== 'scheduled' && post.status !== 'posted') { console.log(`reel ${r.n}: not approved yet (${post.status}), no trials`); continue; }
-    const [{ made }] = await sql`select count(*)::int as made from content_posts where org_id = ${x.brand.os.org} and options->'instagram'->'trial'->>'of' = ${r.postId}`;
-    if (!DRY && made > 0) { console.log(`reel ${r.n}: its ${made} trial(s) already made`); continue; }
+    // the trials already made (one before `verified`): only the missing ones are added, after the last of them
+    const [{ made, last }] = await sql`select count(*)::int as made, max(scheduled_at) as last from content_posts where org_id = ${x.brand.os.org} and options->'instagram'->'trial'->>'of' = ${r.postId}`;
+    if (!DRY && made >= COUNT) { console.log(`reel ${r.n}: its ${made} trial(s) already made`); continue; }
+    const first = DRY ? 1 : made + 1;
     const j = job(x, r.title), file = has(j.final) ? j.final : null, dir = j.p('outputs', 'trials');
     ensure(dir);
     if (!file) { console.warn(`reel ${r.n}: no rendered reel in out/`); continue; }
-    const base = new Date(Math.max(Date.now(), new Date(post.scheduled_at ?? post.posted_at ?? Date.now()).getTime()) + cfg.everyHours * 3_600_000);
-    const when = slots(base, COUNT, tz);
-    for (let i = 1; i <= COUNT; i++) {
+    const from = !DRY && made && last ? new Date(last).getTime() : new Date(post.scheduled_at ?? post.posted_at ?? Date.now()).getTime();
+    const base = new Date(Math.max(Date.now(), from) + cfg.everyHours * 3_600_000);
+    const when = slots(base, COUNT - first + 1, tz);
+    for (let i = first; i <= COUNT; i++) {
       const id = `${SHORT[x.brand.key] ?? x.brand.key}-${x.name}-r${r.n}-t${i}`;
       let src = path.join(dir, `${id}.mp4`);
       const dur = trialVersion(file, src, i);
@@ -99,7 +102,7 @@ try {
         ffmpeg(['-i', src, '-c:v', 'libx264', '-preset', 'slow', '-b:v', `${kbps}k`, '-maxrate', `${kbps}k`, '-bufsize', `${kbps * 2}k`, '-pix_fmt', 'yuv420p', '-c:a', 'copy', '-map_metadata', '0', '-movflags', '+faststart', small]);
         src = small;
       }
-      const at = when[i - 1]!, p = parts(at, tz);
+      const at = when[i - first]!, p = parts(at, tz);
       const day = `${p.y}-${String(p.mo).padStart(2, '0')}-${String(p.d).padStart(2, '0')}`, time = `${String(p.h).padStart(2, '0')}:${String(p.mi).padStart(2, '0')}`;
       const bytes = statSync(src).size;
       console.log(`reel ${r.n} trial ${i}: ${id}, ${dur.toFixed(1)} s, ${(bytes / 1e6).toFixed(1)} MB, goes out ${day} ${time} (${tz})${DRY ? ' [dry run: not sent]' : ''}`);

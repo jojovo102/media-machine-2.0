@@ -43,8 +43,9 @@
     "from": "09:00",
     "to": "22:00",
     "graduation": "MANUAL",
-    "verified": false,
-    "_why": "3 trial versions of every approved reel, posted across the day by the OS (D108). verified: set true once the first trial is seen off the profile grid; until then one version only."
+    "verified": true,
+    "_why": "3 trial versions of every approved reel, posted across the day by the OS (D108). verified: set true once the first trial is seen off the profile grid; until then one version only.",
+    "_verified": "Josef 2026-10-22: \"the first trial isn't on my grid, confirmed it worked well\""
   },
   "notes": "Josef's Catholic page, Italian. Scripts are checked by the priest: never change their wording. No preset yet: the base cut goes out as it is until its own look is built (stage 2): captions in its own type (EB Garamond cream, the word said in the logo's red #B01018, approved 2026-10-21), paintings and real pictures as the proof, never drawn card templates (2026-10-22). The look is his to evolve: it is not fixed forever.",
   "captionLook": {

@@ -8,7 +8,7 @@ its own folder, unchanged, so Jason's updates still merge; this repo tells it wh
 
 ```
 Claude Code/
-  media-machine/        this repo (GitHub, private)
+  media-machine/        this repo (github.com/jojovo102/media-machine-2.0, private; clone it as "media-machine")
     README.md           this file: the one runbook
     CLAUDE.md           the rules that always hold, for any session in this folder
     engine/             the cut engine and the pipeline (Bun + TypeScript, no packages)

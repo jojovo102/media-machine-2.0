@@ -1,0 +1,36 @@
+{
+  "name": "L Ven (@luca_.venier)",
+  "lang": "it",
+  "root": "{machine}/jobs/lven",
+  "os": {
+    "org": "fa57cfc0-14bb-4888-b3d3-0dd8d09a7b12",
+    "workspace": "L Ven",
+    "platforms": [
+      "instagram",
+      "tiktok",
+      "youtube"
+    ]
+  },
+  "names": "Luca Venier. L Ven. GenerAzione.",
+  "nameFixes": [],
+  "speed": 1.0,
+  "frame": {
+    "w": 1080,
+    "h": 1920
+  },
+  "voice": "natural",
+  "music": {
+    "lufs": -39
+  },
+  "gap": 0.1,
+  "trials": {
+    "count": 3,
+    "everyHours": 3,
+    "from": "09:00",
+    "to": "22:00",
+    "graduation": "MANUAL",
+    "verified": false,
+    "_why": "as for Josef's brands (OS D108); verified only after Luca sees his first trial stay off his grid"
+  },
+  "notes": "Luca's own page, Italian, run from his Mac. No preset yet: the base cut goes out as it is. His look is his to set in brands/lven/TASTE.md and a preset of his own."
+}

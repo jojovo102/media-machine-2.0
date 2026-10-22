@@ -1,0 +1,16 @@
+{
+  "_what": "The Ophanim brand kit the talking-head preset applies to a job's copy of the editor's kit (presets/talking-head/run.ts): the site's gold for the editor's royal blue, the site's type for its Inter, the rings logo as the mark. From ophanimai.com app/globals.css (gold-500 #C9A84C) and the OS's dark look, 2026-10-22.",
+  "accent": "#C9A84C",
+  "accentSoft": "#E8D599",
+  "fonts": {
+    "Display-Regular.otf": "{base}/OPHANIM AI OS/lib/autopilot/visuals/fonts/PlusJakartaSans-Regular.ttf",
+    "Display-Bold.otf": "{base}/OPHANIM AI OS/lib/autopilot/visuals/fonts/PlusJakartaSans-SemiBold.ttf",
+    "Display-Black.otf": "{base}/OPHANIM AI OS/lib/autopilot/visuals/fonts/PlusJakartaSans-ExtraBold.ttf"
+  },
+  "logo": "{base}/ophanim-ai/media-exports/reels-ophanim/_assets/logo-ophanim.png",
+  "captures": {
+    "_what": "Real OS screens come from the Atlas Consulting demo workspace (organizations.demo), never from the real workspace: no client names, no numbers of his own on screen (brands/ophanim/TASTE.md).",
+    "workspace": "Atlas Consulting",
+    "url": "https://app.ophanimai.com"
+  }
+}

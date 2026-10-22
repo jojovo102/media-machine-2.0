@@ -1,0 +1,37 @@
+{
+  "name": "Ophanim AI (@josefvolpin)",
+  "lang": "en",
+  "root": "{machine}/jobs/ophanim",
+  "os": {
+    "org": "78ca155f-caf2-452e-8d3c-d28b0b5f7b48",
+    "workspace": "Ophanim AI",
+    "platforms": ["instagram", "youtube", "linkedin"],
+    "linkedinAuthor": "josef"
+  },
+  "names": "Ophanim AI. F2A, Feedback to Action. Josef Volpin. LinkedIn. The OS. Sales calls, pipeline, outreach.",
+  "nameFixes": [
+    ["^(o(ff?|ph)[aeiou]n[aeiou]?m|oftenim|ophenim|ofanum|opanim|othanim)$", "Ophanim"],
+    ["^(f-?2-?a|eff2a|ftoa)$", "F2A"],
+    ["^volpen$", "Volpin"]
+  ],
+  "speed": 1.0,
+  "frame": { "w": 1080, "h": 1920 },
+  "preset": "talking-head",
+  "voice": "natural",
+  "music": {
+    "lufs": -41,
+    "_why": "the shared pool in library/music, this brand's own rotation; -41 LUFS keeps the balance of the business film (vsl-music-v2 at -27 dB)"
+  },
+  "gap": 0.1,
+  "capcut": { "template": "1007", "prefix": "Ophanim" },
+  "trials": {
+    "count": 3,
+    "everyHours": 3,
+    "from": "09:00",
+    "to": "22:00",
+    "graduation": "MANUAL",
+    "verified": false,
+    "_why": "3 trial versions of every approved reel, posted across the day by the OS (D108); five would book every slot of the day for one reel (2026-10-22). verified: set true once the first trial is seen off the profile grid; until then one version only."
+  },
+  "notes": "Business page, English. The look is Jason's talking-head explainer (presets/talking-head) with the Ophanim brand kit: real OS screens filling the top half, no word cards (Josef 2026-10-22). Never the previous offer's content, no prices, nothing internal, never who builds the OS."
+}

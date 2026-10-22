@@ -1,0 +1,12 @@
+# Media never goes into git: the library and every job's footage live on the Mac (and are copied by hand to another).
+library/**
+!library/index.json
+!library/README.md
+jobs/
+vendor/
+.env
+.env.*
+*.log
+.DS_Store
+node_modules/
+brands/*/.music-pool.json

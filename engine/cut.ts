@@ -77,14 +77,16 @@ for (const r of reels) {
   const ins: string[] = [];
   let fc = '';
   const src = probe(r.pieces[0]!.file).video!;
+  // the picture is cut to the piece's exact frame count inside the graph (trim=end_frame): an input -t let a piece
+  // carry one frame too many and the base ran a frame late from there (the flash scan, 2026-10-22)
   r.pieces.forEach((p, i) => {
     const d = p.b - p.a;
-    ins.push('-ss', p.a.toFixed(3), '-t', d.toFixed(3), '-i', p.file);
-    fc += `[${i}:v]scale=w=${W}:h=${H}:force_original_aspect_ratio=increase:flags=lanczos,crop=${W}:${H}:'max(0,min(iw-${W},iw*0.5-${W / 2}))':'max(0,min(ih-${H},ih*0.42-${H / 2}))',setsar=1,fps=${FPS},setpts=(PTS-STARTPTS)/${SPEED}[v${i}];`;
+    ins.push('-ss', p.a.toFixed(4), '-t', (d + 0.1).toFixed(4), '-i', p.file);
+    fc += `[${i}:v]scale=w=${W}:h=${H}:force_original_aspect_ratio=increase:flags=lanczos,crop=${W}:${H}:'max(0,min(iw-${W},iw*0.5-${W / 2}))':'max(0,min(ih-${H},ih*0.42-${H / 2}))',setsar=1,fps=${FPS},trim=end_frame=${Math.round(d * FPS)},setpts=(PTS-STARTPTS)/${SPEED}[v${i}];`;
   });
   r.pieces.forEach((p, i) => {
     const d = p.b - p.a;
-    ins.push('-ss', p.a.toFixed(4), '-t', d.toFixed(4), '-i', voiceOf(p.take));
+    ins.push('-ss', p.a.toFixed(4), '-t', d.toFixed(6), '-i', voiceOf(p.take));
     fc += `[${r.pieces.length + i}:a]aformat=sample_rates=48000:channel_layouts=mono,afade=t=in:d=0.008,afade=t=out:st=${(d - 0.012).toFixed(4)}:d=0.012${SPEED !== 1 ? `,atempo=${SPEED}` : ''}[a${i}];`;
   });
   const n = r.pieces.length;

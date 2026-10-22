@@ -143,7 +143,7 @@ for (const r of reels) {
         break;
       }
       case 'assemble': {
-        uv(['lanes/chat-only/assemble.py', J]);
+        uv([path.join(import.meta.dir, 'assemble.py'), J]); // the editor's assemble with the overlay timing fix (see its header)
         uv(['workflows/face-frame.py', '--verify', j.p('hf-graphics', 'renders', 'final.mp4'), '--plan', J]);
         break;
       }

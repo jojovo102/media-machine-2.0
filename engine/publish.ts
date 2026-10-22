@@ -10,7 +10,7 @@
 //                                      keeps its own copy; the OS's 1 GB fills in two months otherwise)
 import path from 'node:path';
 import { statSync } from 'node:fs';
-import { batch, brand, ffmpeg, finished, flag, has, job, log, osDb, osEnv, probe, readJson, setState } from './lib';
+import { batch, brand, ffmpeg, finished, flag, has, job, log, osDb, osEnv, probe, readJson, setState, writeJson } from './lib';
 
 const env = osEnv();
 const SUPA = env.NEXT_PUBLIC_SUPABASE_URL, KEY = env.SUPABASE_SERVICE_ROLE_KEY;
@@ -56,11 +56,15 @@ try {
     }
     const bytes = statSync(src).size;
     // the post: the script's own, or a new one in this brand's workspace
-    let postId = r.postId;
+    // a reel with no script post in the OS gets one post, made once and remembered (work/reel-<n>/post.json): every later
+    // publish replaces its video (2026-10-22: six copies of one reel were made before this)
+    const remembered = path.join(x.work, `reel-${r.n}`, 'post.json');
+    let postId = r.postId ?? (has(remembered) ? readJson<{ id: string }>(remembered).id : null);
     if (!postId) {
       const sc = scripts[r.n - 1];
       const [row] = await sql`insert into content_posts (org_id, kind, title, script, status, style, platforms, author_key) values (${x.brand.os.org}, 'short', ${r.title || `Reel ${r.n}`}, ${sc ? sc.sentences.map((s) => s.text).join('\n') : null}, 'editing', 'with_media', ${sql.json(x.brand.os.platforms)}, ${x.brand.os.linkedinAuthor ?? null}) returning id`;
       postId = row.id as string;
+      writeJson(remembered, { id: postId, made: new Date().toISOString() });
     }
     const [post] = await sql`select id, org_id, status, media_path, platforms from content_posts where id = ${postId}`;
     if (!post) throw new Error(`reel ${r.n}: post ${postId} is gone`);

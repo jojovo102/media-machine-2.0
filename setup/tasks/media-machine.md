@@ -34,7 +34,12 @@ with `zz-`):
 6. Send a push notification (load PushNotification with ToolSearch) in plain English: the brand and session, how many
    reels, their lengths, what is missing per reel, which clauses are in the speaker's own words, that they wait in the
    OS (workspace, Content, status review), any trials scheduled, anything to decide, and anything you could not check.
-7. Once a day (the first run after 08:00): `bun engine/publish.ts <brand> --cleanup` for each brand of this Mac.
+7. YouTube clips (the reels of the weeks between his recordings): for every video folder in
+   `{base}/ophanim-ai/media-exports/youtube/` (skipping `_machine`, `test`, `selftest`) whose `clips/` holds a
+   `<n> shorts.mp4` that is newer than `jobs/ophanim/yt-<video>/state.json` (or that folder does not exist yet), run
+   `bun engine/youtube.ts <video>` then `bun engine/publish.ts ophanim yt-<video>`: each clip lands on its own post in
+   the Ophanim AI workspace, status review, and trials follow its approval like any reel.
+8. Once a day (the first run after 08:00): `bun engine/publish.ts <brand> --cleanup` for each brand of this Mac.
 
 Rules: never schedule or post anything except trials of an approved reel. Never delete or change anything in raw/.
 Never touch a CapCut project the machine did not write. No prices, internal numbers, the previous offer or who builds

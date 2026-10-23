@@ -67,6 +67,11 @@ Josef has seen the first trial stay off his profile grid), one trial only.
     fresh metadata) are scheduled in the OS across the day, Instagram only, MANUAL graduation. The one thing the
     machine schedules.
 
+**YouTube clips** take a shorter road: the long video is made by the YouTube machine
+(`ophanim-ai/media-exports/youtube/_machine`, its own hourly task), and `bun engine/youtube.ts <video>` brings its
+rendered clips over as a business session `yt-<video>` (one reel per clip), which `publish.ts` and `trials.ts` then
+handle like any recording. The hourly task does it as soon as the clips exist.
+
 Whole chain: `bun engine/run.ts <brand> <session> [--from <step>] [--to <step>] [--no-capcut] [--no-publish]`.
 Each step runs alone too: `bun engine/<step>.ts <brand> <session>`.
 

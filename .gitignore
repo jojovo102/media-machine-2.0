@@ -13,3 +13,4 @@ vendor/
 .DS_Store
 node_modules/
 brands/*/.music-pool.json
+.watch/

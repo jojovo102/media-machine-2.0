@@ -36,6 +36,26 @@ Trials are posted by the OS every 3 hours from 09:00 to 22:00 (5 slots a day). 3
 reels' trials on one day; 5 would book the whole day for one reel. Until a brand's `trials.verified` is set (after
 Josef has seen the first trial stay off his profile grid), one trial only.
 
+## How it runs by itself (2026-10-23)
+
+Josef records and approves; everything between is the machine's. A macOS LaunchAgent runs `engine/watch.ts` every
+5 minutes (installed by `bash setup/watch/install.sh`, removed with `... uninstall`); it starts no AI and costs
+nothing when there is nothing to do.
+
+- **Drop folders:** `~/Desktop/Drop/Business` (Ophanim), `~/Desktop/Drop/VolpinVeritas`, `~/Desktop/Drop/L Ven` (on
+  Luca's Mac), `~/Desktop/Drop/YouTube` (the long video: handed to the YouTube machine, into the video the Monday task
+  prepared, else a folder named by the date; subfolders `broll` and `screen` keep their role). Takes that have not changed for 10 minutes become a new session of that brand, moved in, and the whole
+  chain runs (scripts → … → the reel on its OS post in Review). A script dropped with them (`.md` or `.txt`) is used
+  when the OS has none for that video.
+- **Approvals:** a reel he schedules or posts in the OS (scheduled for later, or approved within the last 24 hours)
+  gets its trials within 5 minutes.
+- **YouTube:** rendered clips of the YouTube machine become business reels in Review.
+- **Telling him:** the OS bell and a push to his phone (`POST /api/webhooks/machine`, signed with a key derived from
+  the OS's SECRETS_KEY), plus a Mac notice. A step that fails says where; Claude picks it up when asked.
+- The Mac must be awake: asleep, nothing runs and the work waits; while a job runs, the watcher keeps it awake.
+  `/media <brand>` still works (a session folder to drop into by hand): the watcher picks those up too.
+- Logs: `.watch/watch.log`, and `watch.log` inside each session.
+
 ## A reel's life
 
 1. **Record.** `/media vv`, `/media biz` or `/media lven` makes today's session folder (`<root>/<date>/raw/`) and

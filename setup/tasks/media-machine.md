@@ -19,13 +19,9 @@ with `zz-`):
    below 88 % kept by both and 88 % his found; `bun engine/check.ts volpinveritas 2026-10-21` must pass), then run
    again from match. Read every `cut-<n>.md`: a clause marked MISSING that was probably said in the speaker's own
    words means the matcher missed it.
-3. The look, for a brand with a preset (Ophanim: `talking-head`): write the job's `graphics-plan.json` (the layout
-   rotation per sentence and one cell per graphic) and the STORYBOARD of `hf-graphics/gfx/build.py`, from Jason's
-   docs in `{base}/video-editor/presets/instagram/talking-head-explainer/` (README.md's ten laws, layout.md § 2, § 3
-   and § 12, graphics.md § 3, captures.md, captions-style.md), with real screens of the OS captured from its Atlas
-   Consulting demo workspace at phone width into `<session>/captures/<id>.png` (never the real workspace), and run
-   `bun presets/talking-head/run.ts <brand> <session>`; answer every gate it prints. A brand without a preset skips
-   this: its base cut goes on as it is.
+3. The look: a brand with a preset in its brand.json runs it (`bun presets/<preset>/run.ts <brand> <session>`, VolpinVeritas:
+   `vv-captions`, its `broll.json` written with the person); answer every gate it prints. A brand without a preset
+   (Ophanim since 2026-10-23: its look is decided with Josef on his next recording) skips this: its clean cut goes on.
 4. `bun engine/finish.ts <brand> <session>` (the music), then look at a contact sheet of each final (frames at 10
    points: no black frame, no frozen picture, the face in frame, nothing on the face), then
    `bun engine/publish.ts <brand> <session>` (the reel onto its post in the brand's workspace, status review). CapCut

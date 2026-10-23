@@ -77,7 +77,7 @@ Each step runs alone too: `bun engine/<step>.ts <brand> <session>`.
 | Language, scripts | English; scripts written by the Monday task in the Ophanim AI workspace | Italian; scripts checked by the priest, wording never changed |
 | Cut | the same engine; speed 1.0 | the same engine; speed 1.05 |
 | Voice, colour | as recorded, one gain; no grade | the same |
-| Look after the cut | preset `talking-head`, planned by the machine (`presets/talking-head/plan.ts`): real OS screens (`library/os-screens`) fill the top half, each matched to what he says; his face alone on about a fifth (the lines no screen fits); the ask as a DM thread; captions "the mix" (a clean subtitle with the spoken word in gold, a big gold word on face lines, one big word at a time on short punches) | preset `vv-captions`: captions in its own type (EB Garamond cream, the word said in red), his own pictures (`broll.json`) under his face; his to evolve |
+| Look after the cut | none for now (Josef 2026-10-23): the clean cut with music; the look is set with him on his next recording. The editor's talking-head preset and the machine's screen planner (`presets/talking-head`) stay in the repo, switched off | preset `vv-captions`: captions in its own type (EB Garamond cream, the word said in red), his own pictures (`broll.json`) under his face; his to evolve |
 | Sound | sound effects on visible events only, from the library | to be decided on its first reel |
 | Music | the shared pool, -41 LUFS | the shared pool, -39 LUFS |
 | Publishing | Ophanim AI workspace: Instagram, YouTube, LinkedIn | VolpinVeritas workspace: Instagram, TikTok, YouTube |

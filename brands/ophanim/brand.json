@@ -16,7 +16,8 @@
   ],
   "speed": 1.0,
   "frame": { "w": 1080, "h": 1920 },
-  "preset": "talking-head",
+  "preset": null,
+  "_preset": "Josef 2026-10-23: no graphics layer until he records a new video and the look is set with him (the machine screens he called \"nothing to do\", the editor's split \"over my head\"). presets/talking-head stays in the repo, switched off.",
   "voice": "natural",
   "music": {
     "lufs": -41,
@@ -33,5 +34,5 @@
     "verified": false,
     "_why": "3 trial versions of every approved reel, posted across the day by the OS (D108); five would book every slot of the day for one reel (2026-10-22). verified: set true once the first trial is seen off the profile grid; until then one version only."
   },
-  "notes": "Business page, English. The look is Jason's talking-head explainer (presets/talking-head) with the Ophanim brand kit: real OS screens filling the top half, no word cards (Josef 2026-10-22). Never the previous offer's content, no prices, nothing internal, never who builds the OS."
+  "notes": "Business page, English. The look is open: decided with Josef on his next recording (TASTE.md, 2026-10-23); until then the clean cut with music goes out. Never the previous offer's content, no prices, nothing internal, never who builds the OS."
 }

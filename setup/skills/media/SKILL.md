@@ -19,14 +19,10 @@ editor at `{base}/video-editor` (never edited, never set up from here). The libr
    first or give it for `<date>/scripts.md`); record as always (one long take or several, a sentence repeated until
    right, nothing to say when he trips, his own words are fine); drop the takes in; say "done" when the copy finished.
 4. When he says it's in: check the files (sizes stable), then `bun run.ts <brand> <session> --to check`. Read every
-   `cut-<n>.md` and the check's output (a failed check stops the run). Then, for a brand with a preset (Ophanim:
-   talking-head), the look: write the job's `graphics-plan.json` and the STORYBOARD of `hf-graphics/gfx/build.py` from
-   Jason's docs (`video-editor/presets/instagram/talking-head-explainer/README.md`, layout.md, graphics.md,
-   captures.md), real screens from the OS's Atlas Consulting demo workspace into `<session>/captures/<id>.png`, and
-   `bun presets/talking-head/run.ts <brand> <session>` (measure, plan, init, stage, build, render, captions, place,
-   qa, assemble, sfx, flash). Then `bun engine/finish.ts <brand> <session>` (music), `bun engine/publish.ts` (the OS,
-   status review), a phone copy under 30 MB sent with SendUserFile, and what is in it: length, which sentences are in
-   his own words, anything missing. Look at a contact sheet before sending.
+   `cut-<n>.md` and the check's output (a failed check stops the run). Then the look: a brand with a preset runs `bun ../presets/<preset>/run.ts <brand> <session>` (VolpinVeritas:
+   `vv-captions`, its `broll.json` written with him). Ophanim has NO preset since 2026-10-23 (Josef: no animations
+   over his head; the look is set with him on his next recording): its clean cut goes on. Then
+   `bun run.ts <brand> <session> --from finish` (music, CapCut, the OS post in review).
 5. After he approves the reel in the OS (scheduled, or Publish now), its trials: `bun engine/trials.ts <brand> <session>`
    (only approved reels; one trial until `trials.verified`).
 

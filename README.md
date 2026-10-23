@@ -95,6 +95,24 @@ handle like any recording. The hourly task does it as soon as the clips exist.
 Whole chain: `bun engine/run.ts <brand> <session> [--from <step>] [--to <step>] [--no-capcut] [--no-publish]`.
 Each step runs alone too: `bun engine/<step>.ts <brand> <session>`.
 
+## Clips from a long video (2026-10-23)
+
+A podcast or a call in, 6 to 10 vertical clips out (`engine/clips.ts`). Nothing is posted or put in the OS: the clips
+are files in the job for a person to watch first.
+
+1. `bun engine/clips.ts prep <brand> <name> <video> [en|it]`: the job `<root>/<name>/` (the footage linked, never
+   moved), every word timed (whisper), `work/outline.md` (what is said, by time).
+2. Claude reads the outline and writes `work/picks.json`: `[{n, start, end, title, hook, why}]`, each 45 to 85 s,
+   starting and ending on whole sentences, a moment that stands on its own.
+3. `bun engine/clips.ts broll <brand> <name> <n> "<query>" <from> <to>`: a free-licence picture or video from Wikimedia
+   Commons over the speaker at those seconds of clip n (a slow push in on a still), its credit in `broll/credits.json`.
+4. `bun engine/clips.ts render <brand> <name> [n...]`: per shot, the faces found (Apple Vision, `engine/core/faces.swift`):
+   one face, a 9:16 window on it; two side by side, each in its own half, stacked. Word captions (three at a time, the
+   word said in yellow), the hook as one plain line for the first 3 s, the b-roll, the voice at -14 LUFS. Into
+   `clips/`, with `clips/README.md` (times, hooks, why each, credits).
+
+First run: Josef's July podcast (56 min, 8 clips, 3 with b-roll), `jobs/ophanim/zz-clips-test`.
+
 ## The two brands, side by side
 
 | | Ophanim AI (@josefvolpin) | VolpinVeritas |

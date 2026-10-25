@@ -17,15 +17,15 @@ L Ven's own music: put tracks Luca has the rights to in `media-machine/library/m
 
 ## What Luca does
 
-Put both files in an empty folder (for example `~/Documents/Claude Code`), open Claude Code in that folder (Josef's
-Claude account) and paste:
+The first time: `LUCA-START-HERE.md` at the top of the repo (a one-off guide for him and his Claude, deleted once his
+Mac runs). He puts both files in an empty folder, opens Claude Code there (Josef's Claude account) and pastes:
 
 ```
-Set up the media machine for L Ven on this Mac. In this folder: git clone https://github.com/jojovo102/media-machine-2.0.git media-machine. Move media-machine.env to media-machine/.env, unzip media-machine-music.zip into media-machine/library/music, and create the folder media-machine/jobs/lven. Run bash media-machine/setup/install.sh and fix everything it lists, then bash media-machine/setup/watch/install.sh. Read media-machine/README.md and CLAUDE.md and follow their rules. Then delete media-machine.env and the zip left in this folder, and tell me it is ready.
+Clone https://github.com/jojovo102/media-machine-2.0.git as "media-machine" in this folder, then read media-machine/LUCA-START-HERE.md and do the steps for Claude, one at a time, telling me what each one did.
 ```
 
 The installer asks for Homebrew if it is missing (https://brew.sh) and downloads the transcription model once
-(about 550 MB).
+(about 550 MB). The guide ends with a test reel that is not uploaded, before the watcher is switched on.
 
 ## Every day
 

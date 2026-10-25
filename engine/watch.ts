@@ -62,7 +62,9 @@ async function tell(orgId: string, title: string, body: string, key: string) {
   Bun.spawnSync(['osascript', '-e', `display notification ${JSON.stringify(body)} with title ${JSON.stringify(title)}`]);
   try {
     const env = osEnv();
-    const k = createHmac('sha256', env.SECRETS_KEY ?? '').update('media-machine-notify').digest();
+    // the signing key: given as is on a Mac that must not hold the OS's master key (Luca's: setup/make-env.sh), else
+    // derived from it exactly as the OS route does
+    const k = env.MACHINE_NOTIFY_KEY ? Buffer.from(env.MACHINE_NOTIFY_KEY, 'hex') : createHmac('sha256', env.SECRETS_KEY ?? '').update('media-machine-notify').digest();
     const payload = JSON.stringify({ orgId, title, body, href: '/content', dedupeKey: key });
     const ts = Math.floor(Date.now() / 1000);
     const sig = createHmac('sha256', k).update(`${ts}.${payload}`).digest('hex');
@@ -203,7 +205,7 @@ for (const k of here) {
   try {
     const ids = [...byPost.keys()];
     const rows = await sql`select p.id, p.title, (select count(*)::int from content_posts t where t.org_id = p.org_id and t.options->'instagram'->'trial'->>'of' = p.id::text) as made
-      from content_posts p where p.id::text = any(${ids}) and p.status in ('scheduled', 'posted')
+      from content_posts p where p.id::text = any(${sql.array(ids, 'text')}) and p.status in ('scheduled', 'posted')
         and coalesce(p.scheduled_at, p.posted_at, p.updated_at) > now() - interval '24 hours'`;   // fresh approvals only: an old post never gets late trials
     const due = new Set(rows.filter((r: { made: number }) => r.made < want).map((r: { id: string }) => byPost.get(r.id)!));
     for (const name of due) {

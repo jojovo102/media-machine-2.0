@@ -14,7 +14,7 @@ import { batch, brand, ffmpeg, finished, flag, has, job, log, osDb, osEnv, probe
 
 const env = osEnv();
 const SUPA = env.NEXT_PUBLIC_SUPABASE_URL, KEY = env.SUPABASE_SERVICE_ROLE_KEY;
-if (!SUPA || !KEY) throw new Error('the OS .env.local has no Supabase URL or service key');
+if (!SUPA || !KEY) throw new Error('the OS keys (.env) have no Supabase URL or service key');
 const BUCKET = 'content-media', LIMIT = 48 * 1024 * 1024;
 const storage = (p: string) => `${SUPA}/storage/v1/object/${BUCKET}/${p.split('/').map(encodeURIComponent).join('/')}`;
 const auth = { Authorization: `Bearer ${KEY}`, apikey: KEY };
@@ -62,7 +62,7 @@ try {
     let postId = r.postId ?? (has(remembered) ? readJson<{ id: string }>(remembered).id : null);
     if (!postId) {
       const sc = scripts[r.n - 1];
-      const [row] = await sql`insert into content_posts (org_id, kind, title, script, status, style, platforms, author_key) values (${x.brand.os.org}, 'short', ${r.title || `Reel ${r.n}`}, ${sc ? sc.sentences.map((s) => s.text).join('\n') : null}, 'editing', 'with_media', ${sql.json(x.brand.os.platforms)}, ${x.brand.os.linkedinAuthor ?? null}) returning id`;
+      const [row] = await sql`insert into content_posts (org_id, kind, title, script, status, style, platforms, author_key) values (${x.brand.os.org}, 'short', ${r.title || `Reel ${r.n}`}, ${sc ? sc.sentences.map((s) => s.text).join('\n') : null}, 'editing', 'with_media', ${JSON.stringify(x.brand.os.platforms)}::jsonb, ${x.brand.os.linkedinAuthor ?? null}) returning id`;
       postId = row.id as string;
       writeJson(remembered, { id: postId, made: new Date().toISOString() });
     }
@@ -74,7 +74,7 @@ try {
     const up = await fetch(storage(key), { method: 'POST', headers: { ...auth, 'content-type': 'video/mp4', 'x-upsert': 'false', 'cache-control': '3600' }, body: Bun.file(src) });
     if (!up.ok) throw new Error(`reel ${r.n}: upload failed (${up.status}): ${(await up.text()).slice(0, 300)}`);
     await sql`update content_posts set media_path = ${key}, media_mime = 'video/mp4', media_bytes = ${bytes}, media_url = null, media_paths = '[]'::jsonb, style = 'with_media',
-      status = 'review', platforms = ${sql.json((post.platforms as string[])?.length ? post.platforms : x.brand.os.platforms)},
+      status = 'review', platforms = ${JSON.stringify((post.platforms as string[])?.length ? post.platforms : x.brand.os.platforms)}::jsonb,
       author_key = coalesce(author_key, ${x.brand.os.linkedinAuthor ?? null}), updated_at = now() where id = ${postId}`;
     // the reel this one replaces, if the machine put it there
     if (post.media_path && String(post.media_path).startsWith(`${x.brand.os.org}/reels/`)) {

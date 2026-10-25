@@ -2,8 +2,8 @@
 # Sets up the media machine on a Mac (2026-10-22; safe to run again, it only adds what is missing). Run from anywhere:
 #   bash "<this folder>/install.sh"
 # The folder that holds the repos side by side is the parent of media-machine: video-editor (Jason's editor, from his
-# zip, never through git), OPHANIM AI OS (with its .env.local from Josef, never through git), volpinveritas-website
-# (Josef's Mac only).
+# zip, never through git; only the business look needs it), OPHANIM AI OS (Josef's Mac only; another Mac gets just the
+# keys the machine uses, media-machine/.env from setup/make-env.sh), volpinveritas-website (Josef's Mac only).
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(dirname "$HERE")"
@@ -40,11 +40,11 @@ if [ -f "$BASE/video-editor/presets/instagram/talking-head-explainer/kit/engine.
 echo "4. The render engine (hyperframes 0.8.105, pinned; packages under this Mac's release-age guard)"
 if [ ! -d "$BASE/video-editor" ]; then echo "  note skipped: only the editor's looks use it"; elif npx -y hyperframes@0.8.105 doctor --json 2>/dev/null | grep -q '"ok"'; then ok "hyperframes 0.8.105 answers"; else todo "npx -y hyperframes@0.8.105 doctor failed: run it by hand and read what it says"; fi
 
-echo "5. The OS (the machine reads and writes it)"
+echo "5. The OS keys (the machine reads and writes the OS: scripts in, reels and trials out)"
 OS="$BASE/OPHANIM AI OS"
-if [ -d "$OS/.git" ]; then ok "OPHANIM AI OS repo"; else todo "clone the OS: git clone https://github.com/jojovo102/ophanim-ai-os-software.git \"$OS\""; fi
-if [ -f "$OS/.env.local" ]; then ok "the OS keys (.env.local)"; else todo "put the OS .env.local in \"$OS\" (from Josef, directly, never through git)"; fi
-if [ -d "$OS/.git" ] && [ ! -d "$OS/node_modules/postgres" ]; then (cd "$OS" && pnpm install --frozen-lockfile) && ok "OS packages (installed)"; elif [ -d "$OS/node_modules/postgres" ]; then ok "OS packages"; fi
+if [ -f "$ROOT/.env" ]; then ok "the machine's own keys (media-machine/.env, from Josef's setup/make-env.sh)"
+elif [ -f "$OS/.env.local" ]; then ok "the OS keys (the OS repo's .env.local, Josef's Mac)"
+else todo "put the keys file from Josef at \"$ROOT/.env\" (he makes it with setup/make-env.sh and AirDrops it; never through git or chat)"; fi
 
 echo "6. The motion engine's packages (Chrome driver for the VolpinVeritas captions)"
 APP="$BASE/ophanim-ai/media-exports/vsl/motion/app"

@@ -178,14 +178,19 @@ export function naturalLevel(input: string, output: string, I: number, peakDb: n
   return measure(output);
 }
 
-/** Reads the OS's .env.local (keys stay in memory; nothing is printed or written). */
+/** The OS keys this machine uses: its own `.env` (only the keys it needs, from Josef: Luca's Mac, 2026-10-25), else
+ * the OS repo's .env.local beside it (Josef's Mac). Keys stay in memory; nothing is printed or written. */
+export const MACHINE_ENV = path.join(MACHINE_ROOT, '.env');
 export function osEnv(): Record<string, string> {
-  return Object.fromEntries(readFileSync(path.join(OS_DIR, '.env.local'), 'utf8').split('\n').filter((l) => l.includes('=') && !l.trimStart().startsWith('#'))
+  const file = existsSync(MACHINE_ENV) ? MACHINE_ENV : path.join(OS_DIR, '.env.local');
+  if (!existsSync(file)) throw new Error(`no OS keys on this Mac: put the machine's .env (from Josef) at ${MACHINE_ENV}`);
+  return Object.fromEntries(readFileSync(file, 'utf8').split('\n').filter((l) => l.includes('=') && !l.trimStart().startsWith('#'))
     .map((l) => { const i = l.indexOf('='); return [l.slice(0, i).trim(), l.slice(i + 1).trim().replace(/^["']|["']$/g, '')]; }));
 }
-/** The OS database, through the OS's own postgres package (imported by path: the machines install nothing). */
+/** The OS database, through Bun's own Postgres client (2026-10-25: no OS repo needed; before, the OS's postgres
+ * package). JSON goes in as text cast to jsonb, a text array through sql.array(xs, 'text'), a list through sql(xs). */
 export async function osDb() {
   const env = osEnv();
-  const postgres = (await import(path.join(OS_DIR, 'node_modules', 'postgres', 'src', 'index.js'))).default;
-  return postgres(env.DIRECT_URL ?? env.DATABASE_URL, { max: 1, prepare: false });
+  const { SQL } = await import('bun');
+  return new SQL(env.DIRECT_URL ?? env.DATABASE_URL, { max: 1, prepare: false } as never);
 }

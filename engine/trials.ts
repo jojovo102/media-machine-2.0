@@ -15,7 +15,7 @@
 // is checked on the profile grid before three go out.
 //   bun trials.ts <brand> <batch> [--dry]    --dry: render the versions and print the plan; nothing goes to the OS
 import path from 'node:path';
-import { statSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { OS_DIR, batch, ensure, ffmpeg, flag, has, job, log, osDb, osEnv, probe, readJson } from './lib';
 import { trialVersion } from './core/trials';
 
@@ -29,7 +29,7 @@ const SHORT: Record<string, string> = { volpinveritas: 'vv', ophanim: 'oph' };
 
 const env = osEnv();
 const SUPA = env.NEXT_PUBLIC_SUPABASE_URL, KEY = env.SUPABASE_SERVICE_ROLE_KEY;
-if (!SUPA || !KEY) throw new Error('the OS .env.local has no Supabase URL or service key');
+if (!SUPA || !KEY) throw new Error('the OS keys (.env) have no Supabase URL or service key');
 const BUCKET = 'content-media', LIMIT = 48 * 1024 * 1024;
 const storage = (p: string) => `${SUPA}/storage/v1/object/${BUCKET}/${p.split('/').map(encodeURIComponent).join('/')}`;
 const auth = { Authorization: `Bearer ${KEY}`, apikey: KEY };
@@ -67,7 +67,9 @@ const reels = readJson<Reel[]>(path.join(x.work, 'reels.json'));
 if (!DRY) {
   const OS_TRIALS = '42f0014';
   const live = await fetch('https://app.ophanimai.com/api/health').then((r) => r.json()).then((j: any) => String(j?.deployed?.commit ?? '')).catch(() => '');
-  const ok = live && Bun.spawnSync(['git', '-C', OS_DIR, 'merge-base', '--is-ancestor', OS_TRIALS, live]).exitCode === 0;
+  // (a Mac without the OS repo, Luca's, cannot read its history: there the live OS answering is enough, the marker
+  // shipped on 2026-10-21 and no deploy since has gone back before it)
+  const ok = live && (!existsSync(path.join(OS_DIR, '.git')) || Bun.spawnSync(['git', '-C', OS_DIR, 'merge-base', '--is-ancestor', OS_TRIALS, live]).exitCode === 0);
   if (!ok) { console.log(`trials: the live OS (${live || 'unreachable'}) does not have trial reels yet (${OS_TRIALS}); nothing scheduled`); process.exit(0); }
 }
 
@@ -111,8 +113,8 @@ try {
       const up = await fetch(storage(key), { method: 'POST', headers: { ...auth, 'content-type': 'video/mp4', 'x-upsert': 'false', 'cache-control': '3600' }, body: Bun.file(src) });
       if (!up.ok) throw new Error(`reel ${r.n} trial ${i}: upload failed (${up.status}): ${(await up.text()).slice(0, 300)}`);
       await sql`insert into content_posts (org_id, kind, title, caption, status, style, platforms, post_date, post_time, scheduled_at, media_path, media_mime, media_bytes, options)
-        values (${x.brand.os.org}, 'short', ${`${post.title} · trial ${i}`}, ${post.caption}, 'scheduled', 'with_media', ${sql.json(['instagram'])}, ${day}, ${time}, ${at.toISOString()},
-                ${key}, 'video/mp4', ${bytes}, ${sql.json({ instagram: { trial: { graduation: cfg.graduation, of: r.postId, n: i } } })})`;
+        values (${x.brand.os.org}, 'short', ${`${post.title} · trial ${i}`}, ${post.caption}, 'scheduled', 'with_media', ${JSON.stringify(['instagram'])}::jsonb, ${day}, ${time}, ${at.toISOString()},
+                ${key}, 'video/mp4', ${bytes}, ${JSON.stringify({ instagram: { trial: { graduation: cfg.graduation, of: r.postId, n: i } } })}::jsonb)`;
       log(x, `trials reel ${r.n}: trial ${i} (${id}) scheduled ${day} ${time}`);
     }
     if (!cfg.verified && !DRY) console.log(`reel ${r.n}: one trial only until the first one is seen off the profile grid (brands/${x.brand.key}.json trials.verified)`);

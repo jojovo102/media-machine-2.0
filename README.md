@@ -141,10 +141,12 @@ card that repeats the caption; big type rare; sound only on something visible; n
 
 ## Tools this Mac needs
 
-ffmpeg, whisper-cli (whisper.cpp) with the large-v3-turbo model, Bun, uv (Jason's Python tools), Node and npx (the
-render engine `hyperframes@0.8.105`, pinned; it resolves its packages under this Mac's one-day release-age guard, so
-Jason's date freeze is not used), Google Chrome, CapCut (optional), the OS repo with its `.env.local` (from Josef,
-never through git). `setup/install.sh` checks and installs what is missing.
+ffmpeg, whisper-cli (whisper.cpp) with the large-v3-turbo model, Bun (it also talks to the OS database, with its own
+Postgres client), Google Chrome, CapCut (optional), and the OS keys: on Josef's Mac the OS repo's `.env.local`, on
+any other Mac `media-machine/.env` made on Josef's Mac by `bash setup/make-env.sh` (only the database, the storage and
+the notice signing key derived from the OS's master key, never the master key) and AirDropped, never through git or
+chat. Only the business look needs uv, Node and npx (Jason's tools and the render engine `hyperframes@0.8.105`) and
+Jason's editor beside the repo. `setup/install.sh` checks and installs what is missing.
 
 ## The old machines
 

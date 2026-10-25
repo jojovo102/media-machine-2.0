@@ -14,3 +14,7 @@ vendor/
 node_modules/
 brands/*/.music-pool.json
 .watch/
+
+# Jason's assemble.py with our fix: his paid code, kept on the Mac only, never in this repo (public since 2026-10-25).
+# Without it the talking-head preset stops at its assemble step (the business look; L Ven and VolpinVeritas do not use it).
+presets/talking-head/assemble.py

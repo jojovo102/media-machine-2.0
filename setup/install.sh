@@ -34,10 +34,11 @@ if [ -f "$MODEL" ]; then ok "whisper large-v3-turbo"; else
 fi
 
 echo "3. Jason's editor (the look after the cut)"
-if [ -f "$BASE/video-editor/presets/instagram/talking-head-explainer/kit/engine.py" ]; then ok "video-editor beside this repo"; else todo "unzip Jason's video-editor zip as \"$BASE/video-editor\" (from Josef; never run its setup.sh)"; fi
+# only a brand with a preset needs it (the business page); L Ven and a clean cut do not
+if [ -f "$BASE/video-editor/presets/instagram/talking-head-explainer/kit/engine.py" ]; then ok "video-editor beside this repo"; else echo "  note no video-editor beside this repo: fine for L Ven (no preset); the business look needs it (Jason's zip from Josef, never its setup.sh)"; fi
 
 echo "4. The render engine (hyperframes 0.8.105, pinned; packages under this Mac's release-age guard)"
-if npx -y hyperframes@0.8.105 doctor --json 2>/dev/null | grep -q '"ok"'; then ok "hyperframes 0.8.105 answers"; else todo "npx -y hyperframes@0.8.105 doctor failed: run it by hand and read what it says"; fi
+if [ ! -d "$BASE/video-editor" ]; then echo "  note skipped: only the editor's looks use it"; elif npx -y hyperframes@0.8.105 doctor --json 2>/dev/null | grep -q '"ok"'; then ok "hyperframes 0.8.105 answers"; else todo "npx -y hyperframes@0.8.105 doctor failed: run it by hand and read what it says"; fi
 
 echo "5. The OS (the machine reads and writes it)"
 OS="$BASE/OPHANIM AI OS"
@@ -56,9 +57,10 @@ ok "/media installed in ~/.claude/skills/media"
 
 echo "8. The library"
 [ -f "$ROOT/library/index.json" ] && ok "library index" || echo "  note copy library/ (sfx, packs, music) from Josef's Mac, then: bun engine/library.ts"
+[ -d "$ROOT/library/music" ] && ok "music" || todo "copy library/music from Josef's Mac (AirDrop; L Ven needs only the music, not sfx or packs)"
 
 echo
 if [ "$TODOS" -gt 0 ]; then echo "$TODOS thing(s) to do above, then run this again."; else
-  echo "Ready. In the Claude app on this Mac, say: \"Create the scheduled task described in $HERE/tasks/media-machine.md, replacing {base} with $BASE\""
-  echo "Then start a video with: /media lven"
+  echo "Ready."
+  echo "Then the drop folders, no AI needed: bash \"$HERE/watch/install.sh\" (takes dropped in ~/Desktop/Drop/L Ven are cut by themselves)"
 fi

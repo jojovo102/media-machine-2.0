@@ -8,12 +8,8 @@ status review) ready for you to approve. No AI runs for that: the machine does i
 
 - A Mac with macOS up to date, **Google Chrome** installed, and **Homebrew** (https://brew.sh: paste its one line in
   Terminal if `brew` is not there).
-- From Josef:
-  - `media-machine-keys.dmg`: an encrypted disk image holding `media-machine.env`, the keys the machine uses to read
-    your scripts and put your reels in the OS. Josef tells you its password **by phone**, never in the chat that
-    carried the file. It may come zipped (`media-machine-keys.zip`): double-click the zip first. Double-click the .dmg, type the password, copy `media-machine.env` out of it, then eject it and
-    delete the .dmg. Treat that file like a password: never send it on, never put it in a shared folder.
-  - `media-machine-music.zip`: the music it can use.
+- From Josef: the folder **For Luca** with `media-machine.env` (the keys the machine uses to read your scripts and
+  put your reels in the OS: treat it like a password, never pass it on) and `media-machine-music.zip` (the music).
 - An empty folder, for example `Documents/Claude Code`, with `media-machine.env` and `media-machine-music.zip` in it.
 - Open **Claude Code** in that folder and paste this one line:
 

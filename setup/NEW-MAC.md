@@ -3,13 +3,12 @@
 Written 2026-10-25. One Mac runs one brand: L Ven runs on Luca's Mac only, the business and VolpinVeritas on Josef's.
 Nothing here needs a GitHub account (the repo is public) or the OS code.
 
-## What Josef hands over (never git, a shared folder, or a plain file in a chat)
+## What Josef hands over (never through git)
 
-1. **The keys:** on Josef's Mac, `bash setup/make-env.sh` writes `~/Desktop/media-machine.env`: the OS database, the
-   storage, and the notice signing key derived from the OS's master key (never the master key, never Stripe, email
-   or AI keys). In person: AirDrop it. Remote: put it in a folder and seal it in an encrypted disk image,
-   `hdiutil create -encryption AES-256 -srcfolder <that folder> -volname "media-machine keys" ~/Desktop/media-machine-keys.dmg`
-   (it asks for a password), send the .dmg any way, and say the password by phone. Then delete his copies.
+1. **The keys:** on Josef's Mac, `bash setup/make-env.sh "<folder>/media-machine.env"` writes only what the machine
+   uses: the OS database, the storage, and the notice signing key derived from the OS's master key (never the master
+   key, never Stripe, email or AI keys). Josef sends it as a plain file (2026-10-25: his choice, encryption gave
+   errors); delete it from the chat or transfer afterwards.
 2. **The music:** `~/Desktop/media-machine-music.zip`, the tracks of the pool whose rights are cleared (two on
    2026-10-25: Classical Cello Experience and the VSL music). Tracks marked unknown rights (YouTube rips) are never
    used by the machine and are not sent; Jason's music library is not in the pool and is not needed.

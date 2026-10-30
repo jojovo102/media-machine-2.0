@@ -100,7 +100,9 @@ for (const r of reels) {
     const pr = probe(p.file), vid = clone(protoVid), seg = clone(protoSeg);
     Object.assign(vid, { id: UP(), path: p.file, media_path: '', material_name: path.basename(p.file), duration: us(pr.duration), width: pr.video!.w, height: pr.video!.h, local_material_id: libId.get(p.file) });
     mats.videos!.push(vid);
-    const z = x.brand.punch[i % x.brand.punch.length]!;
+    // a brand without punch-ins (VolpinVeritas: "no zooms, no punch-ins") keeps every cut at full frame
+    const punch: number[] = (x.brand as any).punch?.length ? (x.brand as any).punch : [1];
+    const z = punch[i % punch.length]!;
     const dur = us(p.b - p.a), tdur = Math.round(dur / x.brand.speed);
     Object.assign(seg, {
       id: UP(), material_id: vid.id, extra_material_refs: copyRefs(protoSeg.extra_material_refs, x.brand.speed), speed: x.brand.speed,

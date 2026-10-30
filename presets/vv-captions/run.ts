@@ -35,9 +35,11 @@ for (const r of reels) {
   ensure(dir);
   // <session>/style.json {"captions": false}: no captions on this reel (Josef, 2026-10-30, Halloween: he adds them
   // himself in Instagram's Edits app; the hook's title stays)
-  const look = has(x.p('style.json')) ? readJson<{ captions?: boolean }>(x.p('style.json')) : {};
+  // ... and {"captionLook": {...}, "captionSize": n}: the brand's caption look changed for this reel only (Halloween:
+  // the hook title's type, "lo stesso font di quello che abbiamo usato all'inizio, senza lo sfondo bianco")
+  const look = has(x.p('style.json')) ? readJson<{ captions?: boolean; captionLook?: Partial<B['captionLook']>; captionSize?: number }>(x.p('style.json')) : {};
   const withCaps = look.captions !== false;
-  const list = withCaps ? await captionTrack(words, dur, { w: 1080, h: 1920, y: b.captionY ?? 0.52, size: b.captionSize ?? 80, style: 'brand3', dir, fps: FPS, look: { ...b.captionLook, fontFace } }) : '';
+  const list = withCaps ? await captionTrack(words, dur, { w: 1080, h: 1920, y: b.captionY ?? 0.52, size: look.captionSize ?? b.captionSize ?? 80, style: 'brand3', dir, fps: FPS, look: { ...b.captionLook, ...(look.captionLook ?? {}), fontFace } }) : '';
   // b-roll pictures, anchored to his words
   type Shot = { file: string; files?: string[]; title?: string[]; shift?: number; from: string; to?: string; hold?: number; tail?: number; style?: 'under' | 'float' | 'hook' };
   const shots = has(x.p('broll.json')) ? readJson<Shot[]>(x.p('broll.json')) : [];

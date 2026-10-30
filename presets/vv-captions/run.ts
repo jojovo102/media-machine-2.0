@@ -33,7 +33,11 @@ for (const r of reels) {
   }
   const dur = probe(j.base).duration, dir = j.p('captions');
   ensure(dir);
-  const list = await captionTrack(words, dur, { w: 1080, h: 1920, y: b.captionY ?? 0.52, size: b.captionSize ?? 80, style: 'brand3', dir, fps: FPS, look: { ...b.captionLook, fontFace } });
+  // <session>/style.json {"captions": false}: no captions on this reel (Josef, 2026-10-30, Halloween: he adds them
+  // himself in Instagram's Edits app; the hook's title stays)
+  const look = has(x.p('style.json')) ? readJson<{ captions?: boolean }>(x.p('style.json')) : {};
+  const withCaps = look.captions !== false;
+  const list = withCaps ? await captionTrack(words, dur, { w: 1080, h: 1920, y: b.captionY ?? 0.52, size: b.captionSize ?? 80, style: 'brand3', dir, fps: FPS, look: { ...b.captionLook, fontFace } }) : '';
   // b-roll pictures, anchored to his words
   type Shot = { file: string; files?: string[]; title?: string[]; shift?: number; from: string; to?: string; hold?: number; tail?: number; style?: 'under' | 'float' | 'hook' };
   const shots = has(x.p('broll.json')) ? readJson<Shot[]>(x.p('broll.json')) : [];
@@ -43,8 +47,8 @@ for (const r of reels) {
     for (let i = 0; i + want.length <= words.length; i++) if (words[i]!.at >= after && want.every((q, k) => norm(words[i + k]!.w) === q)) return { at: words[i]!.at, end: words[i + want.length - 1]!.end };
     return null;
   };
-  const ins: string[] = ['-i', j.base, '-f', 'concat', '-safe', '0', '-i', list];
-  let fc = '', last = '0:v', k = 2;
+  const ins: string[] = withCaps ? ['-i', j.base, '-f', 'concat', '-safe', '0', '-i', list] : ['-i', j.base];
+  let fc = '', last = '0:v', k = withCaps ? 2 : 1;
   let hook: { t0: number; t1: number; shift: number } | null = null;
   for (const sh of shots) {
     const a = find(sh.from), b = sh.to ? find(sh.to, a?.at ?? 0) : null;
@@ -98,8 +102,8 @@ for (const r of reels) {
   const out = j.p('outputs', `${j.name}-final.mp4`);
   // the captions move down with him while the hook's layout is on
   const capAt = hook ? `x=0:y='if(between(t,${(hook.t0 - 0.5 / FPS).toFixed(4)},${(hook.t1 - 0.5 / FPS).toFixed(4)}),${hook.shift},0)':eval=frame` : '0:0';
-  ffmpeg([...ins, '-filter_complex', `${fc}[1:v]fps=${FPS},format=rgba[c];[${last}][c]overlay=${capAt}:eof_action=pass,format=yuv420p[v]`, '-map', '[v]', '-map', '0:a',
+  ffmpeg([...ins, '-filter_complex', withCaps ? `${fc}[1:v]fps=${FPS},format=rgba[c];[${last}][c]overlay=${capAt}:eof_action=pass,format=yuv420p[v]` : `${fc}[${last}]format=yuv420p[v]`, '-map', '[v]', '-map', '0:a',
     '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709', '-c:a', 'copy', '-t', dur.toFixed(3), '-movflags', '+faststart', out]);
-  console.log(`reel ${r.n}: captions on ${j.name} (${words.length} words) -> ${path.basename(out)}`);
+  console.log(`reel ${r.n}: ${withCaps ? `captions on ${j.name} (${words.length} words)` : 'no captions (style.json)'} -> ${path.basename(out)}`);
   log(x, `vv-captions reel ${r.n}: ${words.length} words captioned`);
 }

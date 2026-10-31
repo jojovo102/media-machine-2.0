@@ -15,7 +15,7 @@
 // is checked on the profile grid before three go out.
 //   bun trials.ts <brand> <batch> [--dry]    --dry: render the versions and print the plan; nothing goes to the OS
 import path from 'node:path';
-import { existsSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { OS_DIR, batch, ensure, ffmpeg, flag, has, job, log, osDb, osEnv, probe, readJson } from './lib';
 import { trialVersion } from './core/trials';
 
@@ -73,6 +73,16 @@ if (!DRY) {
   if (!ok) { console.log(`trials: the live OS (${live || 'unreachable'}) does not have trial reels yet (${OS_TRIALS}); nothing scheduled`); process.exit(0); }
 }
 
+// One trials run per session at a time (2026-10-31: the watcher started its own run while one started by hand was
+// rendering; it rewrote the first version's file and would have scheduled three more posts): a lock with the pid.
+const LOCK = path.join(x.work, 'trials.lock');
+if (!DRY && existsSync(LOCK)) {
+  const pid = Number(readFileSync(LOCK, 'utf8')) || 0;
+  let alive = false; try { if (pid) { process.kill(pid, 0); alive = true; } } catch { /* gone */ }
+  if (alive) { console.log(`trials: another run (pid ${pid}) is making this session's trials; leaving it to that one`); process.exit(0); }
+}
+if (!DRY) { writeFileSync(LOCK, String(process.pid)); process.on('exit', () => { try { rmSync(LOCK); } catch { /* already gone */ } }); }
+
 const sql = await osDb();
 try {
   const [org] = await sql`select timezone from organizations where id = ${x.brand.os.org}`;
@@ -104,6 +114,9 @@ try {
         ffmpeg(['-i', src, '-c:v', 'libx264', '-preset', 'slow', '-b:v', `${kbps}k`, '-maxrate', `${kbps}k`, '-bufsize', `${kbps * 2}k`, '-pix_fmt', 'yuv420p', '-c:a', 'copy', '-map_metadata', '0', '-movflags', '+faststart', small]);
         src = small;
       }
+      // made meanwhile by another run? then not twice
+      const [dup] = await sql`select 1 from content_posts where org_id = ${x.brand.os.org} and options->'instagram'->'trial'->>'of' = ${r.postId} and options->'instagram'->'trial'->>'n' = ${String(i)}`;
+      if (!DRY && dup) { console.log(`reel ${r.n} trial ${i}: already in the OS, skipped`); continue; }
       const at = when[i - first]!, p = parts(at, tz);
       const day = `${p.y}-${String(p.mo).padStart(2, '0')}-${String(p.d).padStart(2, '0')}`, time = `${String(p.h).padStart(2, '0')}:${String(p.mi).padStart(2, '0')}`;
       const bytes = statSync(src).size;
